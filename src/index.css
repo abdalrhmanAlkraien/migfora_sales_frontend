@@ -1,0 +1,42 @@
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+:root {
+  /* Primary */
+  --color-navy:        #0D1B2A;
+  --color-orange:      #FF9900;
+  --color-white:       #FFFFFF;
+  --color-off-white:   #F8F9FB;
+
+  /* Supporting */
+  --color-navy-2:      #162233;
+  --color-navy-3:      #1E2D40;
+  --color-orange-2:    #FFB347;
+  --color-darkest:     #080F18;
+
+  /* Typography */
+  --font-heading: 'Syne', Arial Black, sans-serif;
+  --font-body:    'DM Sans', Calibri, sans-serif;
+
+  /* Layout */
+  --navbar-height:        64px;
+  --subnavbar-height:     40px;
+  --sidebar-width:        260px;
+  --sidebar-toggle-size:  40px;
+}
+
+body {
+  min-height: 100vh;
+  font-family: var(--font-body);
+  font-weight: 300;
+  background-color: var(--color-off-white);
+  color: var(--color-navy);
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-heading);
+  letter-spacing: 0.02em;
+}

@@ -1,0 +1,28 @@
+.revenue-chart {
+  background-color: var(--color-white);
+  border-radius: 12px;
+  padding: 24px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  margin-bottom: 24px;
+}
+
+.revenue-chart__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 24px;
+}
+
+.revenue-chart__title {
+  font-family: var(--font-heading);
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--color-navy);
+}
+
+.revenue-chart__subtitle {
+  font-family: var(--font-body);
+  font-size: 12px;
+  color: #6b7280;
+  margin-top: 2px;
+}

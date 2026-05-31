@@ -1,0 +1,24 @@
+.footer {
+  background-color: var(--color-darkest);
+  color: var(--color-off-white);
+  padding: 24px 32px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-family: var(--font-body);
+  font-size: 13px;
+  font-weight: 300;
+}
+
+.footer__brand {
+  font-family: var(--font-heading);
+  font-weight: 700;
+}
+
+.footer__accent {
+  color: var(--color-orange);
+}
+
+.footer__tagline {
+  color: var(--color-navy-3);
+}

@@ -128,7 +128,7 @@ export default function CompanyProfile() {
           items={investigations}
           total={company.investigationsCount ?? 0}
           type="investigation"
-          showMorePath={`/companies/${id}/investigations`}
+          showMorePath={`/companies/${id}/investigations`}  // ← this must be here
           onItemClick={(item) => navigate(`/investigations/${item.id}`)}
         />
         <CompanyRecentSection

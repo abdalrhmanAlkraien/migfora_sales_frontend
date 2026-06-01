@@ -10,6 +10,10 @@ import ChangePassword from '../pages/ChangePassword'
 import Companies from '../pages/Companies'
 import CompanyProfile from '../pages/CompanyProfile'
 import CreateCompany from '../pages/CreateCompany'
+import CreateInvestigation from '../pages/CreateInvestigation'
+import InvestigationDetail from '../pages/InvestigationDetail'
+import InvestigationLab from '../pages/InvestigationLab'
+import CompanyInvestigations from '../pages/CompanyInvestigations'
 
 
 export default function AppRoutes() {
@@ -65,7 +69,20 @@ export default function AppRoutes() {
               <CreateCompany />
               </AppLayout>
           </ProtectedRoute>
+        }/>  
+
+        <Route path="/companies/:id/investigations" element={
+          <ProtectedRoute><AppLayout><CompanyInvestigations /></AppLayout></ProtectedRoute>
         }/>        
+        <Route path="/companies/:id/investigations/new" element={
+          <ProtectedRoute><AppLayout><CreateInvestigation /></AppLayout></ProtectedRoute>
+        }/>
+        <Route path="/investigations/:id" element={
+          <ProtectedRoute><AppLayout><InvestigationDetail /></AppLayout></ProtectedRoute>
+        }/>
+        <Route path="/investigations/:id/lab" element={
+          <ProtectedRoute><AppLayout><InvestigationLab /></AppLayout></ProtectedRoute>
+        }/>         
 
         {/* Fallback */}
         <Route path="*" element={<Navigate to="/dashboard" replace />} />

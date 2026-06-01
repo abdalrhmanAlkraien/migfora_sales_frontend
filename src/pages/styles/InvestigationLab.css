@@ -1,0 +1,65 @@
+.lab {
+  padding: 32px; max-width: 1200px; margin: 0 auto;
+  animation: fade-in 0.3s ease both;
+}
+@keyframes fade-in {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.lab__back {
+  display: inline-flex; align-items: center; gap: 5px;
+  font-family: var(--font-body); font-size: .8rem;
+  color: rgba(13,27,42,.45); background: none; border: none;
+  cursor: pointer; padding: 0; margin-bottom: 14px; transition: color .15s;
+}
+.lab__back svg { width: 14px; height: 14px; }
+.lab__back:hover { color: var(--color-navy); }
+.lab__title-row {
+  display: flex; align-items: center; justify-content: space-between;
+  flex-wrap: wrap; gap: 12px; margin-bottom: 24px;
+}
+.lab__title-left { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+.lab__domain-badge {
+  display: inline-flex; align-items: center; gap: 7px;
+  font-family: var(--font-heading); font-size: 1.4rem; font-weight: 800;
+  color: var(--color-navy);
+}
+.lab__domain-icon { width: 18px; height: 18px; color: var(--color-orange); }
+.lab__ip {
+  font-family: var(--font-body); font-size: .8rem;
+  color: rgba(13,27,42,.4); background: rgba(13,27,42,.06);
+  padding: 3px 10px; border-radius: 6px;
+}
+.lab__company-link {
+  font-family: var(--font-body); font-size: .82rem;
+  color: var(--color-orange); cursor: pointer; transition: opacity .15s;
+}
+.lab__company-link:hover { opacity: .7; }
+.lab__cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 16px; margin-top: 8px;
+}
+
+.lab__loading {
+  padding: 80px 32px; text-align: center;
+  font-family: var(--font-body); font-size: .9rem; color: rgba(13,27,42,.4);
+}
+
+.lab__error {
+  padding: 14px 18px; border-radius: 8px; margin: 32px;
+  background: rgba(220,38,38,.07); border: 1px solid rgba(220,38,38,.18);
+  font-family: var(--font-body); font-size: .875rem; color: #dc2626;
+}
+
+.lab__tasks-section {
+  background: var(--color-white); border: 1px solid rgba(13,27,42,.08);
+  border-radius: 14px; padding: 24px;
+}
+
+.lab__tasks-header { margin-bottom: 20px; }
+
+.lab__tasks-title {
+  font-family: var(--font-heading); font-size: 1rem;
+  font-weight: 700; color: var(--color-navy);
+}

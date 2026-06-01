@@ -7,6 +7,9 @@ import Login from '../pages/Login'
 import Dashboard from '../pages/Dashboard'
 import Register from '../pages/Register'
 import ChangePassword from '../pages/ChangePassword'
+import Companies from '../pages/Companies'
+import CompanyProfile from '../pages/CompanyProfile'
+import CreateCompany from '../pages/CreateCompany'
 
 
 export default function AppRoutes() {
@@ -39,6 +42,30 @@ export default function AppRoutes() {
             </AppLayout>
           </ProtectedRoute>
         }/>
+
+        <Route path="/comapnies" element={
+          <ProtectedRoute>
+            <AppLayout>
+              <Companies />
+            </AppLayout>
+          </ProtectedRoute>
+        }/>
+
+        <Route path="/companies/:id" element={
+          <ProtectedRoute>
+            <AppLayout>
+              <CompanyProfile />
+              </AppLayout>
+              </ProtectedRoute>
+        }/>
+
+        <Route path="/companies/new" element={
+          <ProtectedRoute>
+            <AppLayout>
+              <CreateCompany />
+              </AppLayout>
+          </ProtectedRoute>
+        }/>        
 
         {/* Fallback */}
         <Route path="*" element={<Navigate to="/dashboard" replace />} />

@@ -1,14 +1,41 @@
-import { useLocation } from 'react-router-dom'
+import { useLocation, matchPath } from 'react-router-dom'
 import './styles/SubNavbar.css'
 
 const PAGE_TITLES = {
   '/dashboard': 'Dashboard',
+  '/comapnies': 'Companies',
+  '/companies/new': 'New Company',
+
   // add more as you build pages
 }
 
+const DYNAMIC_TITLES = [
+  { pattern: '/companies/:id/contacts',      title: 'Contacts' },
+  { pattern: '/companies/:id/investigations', title: 'Investigations' },
+  { pattern: '/companies/:id/reports',       title: 'Reports' },
+  { pattern: '/companies/:id',               title: 'Company Profile' },
+  { pattern: '/investigations/:id/lab',      title: 'Investigation Lab' },
+  { pattern: '/investigations/:id',          title: 'Investigation' },
+  { pattern: '/reports/:id',                 title: 'Report' },
+]
+
 export default function SubNavbar({ isOpen, onToggle }) {
   const location = useLocation()
-  const title = PAGE_TITLES[location.pathname] || 'Page'
+
+  const getPageTitle = () => {
+    // exact match first
+    if (PAGE_TITLES[location.pathname]) return PAGE_TITLES[location.pathname]
+
+    // dynamic routes
+    for (const { pattern, title } of DYNAMIC_TITLES) {
+      if (matchPath(pattern, location.pathname)) return title
+    }
+
+    return ''
+  }
+
+  const pageTitle = getPageTitle()
+  const title = getPageTitle() || 'Page'
 
   return (
     <div className={`sub-navbar ${isOpen ? 'sub-navbar--shifted' : ''}`}>

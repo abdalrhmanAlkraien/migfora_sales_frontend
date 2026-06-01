@@ -1,0 +1,31 @@
+.company-profile {
+  padding: 32px;
+  max-width: 1200px;
+  margin: 0 auto;
+  animation: fade-in 0.3s ease both;
+}
+
+@keyframes fade-in {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.company-profile__loading {
+  padding: 80px 32px;
+  text-align: center;
+  font-family: var(--font-body);
+  font-size: 0.9rem;
+  color: rgba(13, 27, 42, 0.4);
+}
+
+.company-profile__sections {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 20px;
+  margin-top: 24px;
+}
+
+@media (max-width: 640px) {
+  .company-profile { padding: 20px 16px; }
+  .company-profile__sections { grid-template-columns: 1fr; }
+}

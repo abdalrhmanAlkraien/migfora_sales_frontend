@@ -1,0 +1,15 @@
+/* src/components/contact/styles/ContactStatusBadge.css */
+.contact-status-badge {
+  font-family: var(--font-body); font-size: .68rem; font-weight: 600;
+  letter-spacing: .05em; text-transform: uppercase;
+  padding: 3px 9px; border-radius: 20px; white-space: nowrap;
+}
+.contact-status-badge--new         { background: rgba(13,27,42,.07);   color: rgba(13,27,42,.5); }
+.contact-status-badge--contacted   { background: rgba(59,130,246,.1);  color: #2563eb; }
+.contact-status-badge--interested  { background: rgba(139,92,246,.1);  color: #7c3aed; }
+.contact-status-badge--meeting     { background: rgba(255,153,0,.12);  color: #b96d00; }
+.contact-status-badge--proposal    { background: rgba(245,158,11,.12); color: #b45309; }
+.contact-status-badge--negotiating { background: rgba(249,115,22,.12); color: #c2410c; }
+.contact-status-badge--won         { background: rgba(16,185,129,.1);  color: #059669; }
+.contact-status-badge--lost        { background: rgba(239,68,68,.1);   color: #dc2626; }
+.contact-status-badge--hold        { background: rgba(107,114,128,.1); color: #4b5563; }

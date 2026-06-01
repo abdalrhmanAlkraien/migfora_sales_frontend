@@ -14,6 +14,9 @@ import CreateInvestigation from '../pages/CreateInvestigation'
 import InvestigationDetail from '../pages/InvestigationDetail'
 import InvestigationLab from '../pages/InvestigationLab'
 import CompanyInvestigations from '../pages/CompanyInvestigations'
+import CompanyContacts from '../pages/CompanyContacts'
+import CreateContact from '../pages/CreateContact'
+import ContactDetail from '../pages/ContactDetail'
 
 
 export default function AppRoutes() {
@@ -83,6 +86,16 @@ export default function AppRoutes() {
         <Route path="/investigations/:id/lab" element={
           <ProtectedRoute><AppLayout><InvestigationLab /></AppLayout></ProtectedRoute>
         }/>         
+
+        <Route path="/companies/:id/contacts" element={
+          <ProtectedRoute><AppLayout><CompanyContacts /></AppLayout></ProtectedRoute>
+        }/>
+        <Route path="/companies/:id/contacts/new" element={
+          <ProtectedRoute><AppLayout><CreateContact /></AppLayout></ProtectedRoute>
+        }/>
+        <Route path="/contacts/:id" element={
+          <ProtectedRoute><AppLayout><ContactDetail /></AppLayout></ProtectedRoute>
+        }/>        
 
         {/* Fallback */}
         <Route path="*" element={<Navigate to="/dashboard" replace />} />

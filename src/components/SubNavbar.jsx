@@ -17,6 +17,9 @@ const DYNAMIC_TITLES = [
   { pattern: '/investigations/:id/lab',      title: 'Investigation Lab' },
   { pattern: '/investigations/:id',          title: 'Investigation' },
   { pattern: '/reports/:id',                 title: 'Report' },
+  { pattern: '/companies/:id/contacts/new', title: 'New Contact' },
+  { pattern: '/companies/:id/contacts',     title: 'Contacts' },
+  { pattern: '/contacts/:id',               title: 'Contact' },  
 ]
 
 export default function SubNavbar({ isOpen, onToggle }) {

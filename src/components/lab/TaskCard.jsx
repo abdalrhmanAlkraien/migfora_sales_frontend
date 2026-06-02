@@ -11,7 +11,82 @@ const STATUS_MAP = {
   BLOCKED:   { label: 'Blocked',   cls: 'blocked' },
 }
 
-export default function TaskCard({ task, investigationId, mode }) {
+function renderValue(v) {
+  if (v === null || v === undefined) return '—'
+  if (Array.isArray(v)) return v.join(', ')
+  if (typeof v === 'object') {
+    return Object.entries(v)
+      .map(([hk, hv]) => `${hk}: ${hv}`)
+      .join('\n')
+  }
+  return String(v)
+}
+
+function ResultBlock({ result }) {
+  if (typeof result === 'string') {
+    return <pre className="task-card__result-pre">{result}</pre>
+  }
+
+  if (typeof result === 'object' && result !== null) {
+    const flat   = Object.entries(result).filter(([_, v]) =>
+      v === null || typeof v !== 'object' || Array.isArray(v)
+    )
+    const nested = Object.entries(result).filter(([_, v]) =>
+      v !== null && typeof v === 'object' && !Array.isArray(v)
+    )
+
+    return (
+      <div className="task-card__result-kv">
+        {flat.map(([k, v]) => (
+          <div key={k} className="task-card__result-row">
+            <span className="task-card__result-key">{k}</span>
+            <span className="task-card__result-val">
+              {Array.isArray(v) ? (
+                <div className="task-card__result-list">
+                  {v.map((item, i) => (
+                    <span key={i} className="task-card__result-tag">{item}</span>
+                  ))}
+                </div>
+              ) : v === null ? '—' : String(v)}
+            </span>
+          </div>
+        ))}
+        {nested.map(([k, v]) => (
+          <NestedBlock key={k} label={k} data={v} />
+        ))}
+      </div>
+    )
+  }
+
+  return null
+}
+
+function NestedBlock({ label, data }) {
+  const [open, setOpen] = useState(false)
+  return (
+    <div className="task-card__nested">
+      <button className="task-card__nested-trigger" onClick={() => setOpen((p) => !p)}>
+        <span className="task-card__result-key">{label}</span>
+        <svg viewBox="0 0 10 6" fill="none"
+          style={{ transform: open ? 'rotate(180deg)' : 'none', transition: 'transform .2s', width: 10, height: 10 }}>
+          <path d="M1 1l4 4 4-4" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/>
+        </svg>
+      </button>
+      {open && (
+        <div className="task-card__nested-body">
+          {Object.entries(data).map(([k, v]) => (
+            <div key={k} className="task-card__result-row task-card__result-row--nested">
+              <span className="task-card__result-key">{k}</span>
+              <span className="task-card__result-val">{renderValue(v)}</span>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  )
+}
+
+export default function TaskCard({ task, investigationId, mode, onComplete }) {
   const [status,      setStatus]      = useState('IDLE')
   const [expanded,    setExpanded]    = useState(false)
   const [result,      setResult]      = useState(null)
@@ -36,65 +111,62 @@ export default function TaskCard({ task, investigationId, mode }) {
     }
   }
 
-    const pollResult = async (createdTaskId) => {
+  const pollResult = async (createdTaskId) => {
     const MAX_POLLS = 30
     const INTERVAL  = 3000
     let   count     = 0
+    let   stopped   = false
 
     const poll = async () => {
-        try {
+      if (stopped) return
+      try {
         const { data } = await getTaskResultApi(investigationId, createdTaskId)
 
-        setStatus(data.status)
-
         if (data.status === 'COMPLETED') {
-      // ... existing ...
-      
-    }
-    if (data.status === 'FAILED') {
-      // ... existing ...
-      if (onComplete) onComplete() // ← refresh context even on failure
-      return
-    }
-        if (data.status === 'COMPLETED') {
-            let parsed = data.result
-            if (parsed && typeof parsed === 'string') {
+          stopped = true
+          setStatus('COMPLETED')
+          let parsed = data.result
+          if (parsed && typeof parsed === 'string') {
             try { parsed = JSON.parse(parsed) } catch { /* keep as string */ }
-            }
-            setResult(parsed || data.rawOutput || 'No result data.')
-            setExpanded(true)
-            if (onComplete) onComplete()
-            return
+          }
+          setResult(parsed || data.rawOutput || 'No result data.')
+          setExpanded(true)
+          if (onComplete) onComplete()
+          return
         }
 
         if (data.status === 'FAILED') {
-            setResult(data.errorMessage || 'Task failed with no error message.')
-            setExpanded(true)
-            if (onComplete) onComplete()
-            return
+          stopped = true
+          setStatus('FAILED')
+          setResult(data.errorMessage || 'Task failed.')
+          setExpanded(true)
+          if (onComplete) onComplete()
+          return
         }
 
         if (data.status === 'BLOCKED') {
-            setResult(data.errorMessage || 'Task blocked by dependency.')
-            return
+          stopped = true
+          setStatus('BLOCKED')
+          setResult(data.errorMessage || 'Task blocked by dependency.')
+          return
         }
 
-        // still PENDING or RUNNING — keep polling
         count++
         if (count < MAX_POLLS) {
-            setTimeout(poll, INTERVAL)
+          setTimeout(poll, INTERVAL)
         } else {
-            setStatus('FAILED')
-            setResult('Task timed out — check Investigation Detail for status.')
+          stopped = true
+          setStatus('FAILED')
+          setResult('Task timed out.')
         }
-        } catch {
+      } catch {
         count++
-        if (count < MAX_POLLS) setTimeout(poll, INTERVAL)
-        }
+        if (!stopped && count < MAX_POLLS) setTimeout(poll, INTERVAL)
+      }
     }
 
     setTimeout(poll, INTERVAL)
-    }
+  }
 
   const handleRun = async () => {
     setStatus('PENDING')
@@ -221,11 +293,8 @@ export default function TaskCard({ task, investigationId, mode }) {
       {mode === 'manual' && (
         <div className="task-card__actions">
           {status === 'IDLE' && canRun === null && (
-            <button
-              className="task-card__btn task-card__btn--check"
-              onClick={handleCheck}
-              disabled={checking}
-            >
+            <button className="task-card__btn task-card__btn--check"
+              onClick={handleCheck} disabled={checking}>
               {checking
                 ? <><span className="task-card__btn-spinner" /> Checking…</>
                 : 'Check & Run'
@@ -233,19 +302,13 @@ export default function TaskCard({ task, investigationId, mode }) {
             </button>
           )}
           {status === 'IDLE' && canRun === true && (
-            <button
-              className="task-card__btn task-card__btn--run"
-              onClick={handleRun}
-            >
+            <button className="task-card__btn task-card__btn--run" onClick={handleRun}>
               Run {task.type}
             </button>
           )}
           {status === 'IDLE' && canRun === false && (
-            <button
-              className="task-card__btn task-card__btn--recheck"
-              onClick={handleCheck}
-              disabled={checking}
-            >
+            <button className="task-card__btn task-card__btn--recheck"
+              onClick={handleCheck} disabled={checking}>
               {checking ? 'Checking…' : 'Re-check'}
             </button>
           )}
@@ -256,16 +319,14 @@ export default function TaskCard({ task, investigationId, mode }) {
             </div>
           )}
           {(status === 'COMPLETED' || status === 'FAILED') && (
-            <button
-              className="task-card__btn task-card__btn--recheck"
+            <button className="task-card__btn task-card__btn--recheck"
               onClick={() => {
                 setStatus('IDLE')
                 setCheckResult(null)
                 setResult(null)
                 setExpanded(false)
                 setTaskId(null)
-              }}
-            >
+              }}>
               Run again
             </button>
           )}
@@ -274,20 +335,7 @@ export default function TaskCard({ task, investigationId, mode }) {
 
       {expanded && result && (
         <div className="task-card__result">
-          {typeof result === 'object' ? (
-            <div className="task-card__result-kv">
-              {Object.entries(result).map(([k, v]) => (
-                <div key={k} className="task-card__result-row">
-                  <span className="task-card__result-key">{k}</span>
-                  <span className="task-card__result-val">
-                    {Array.isArray(v) ? v.join(', ') : String(v)}
-                  </span>
-                </div>
-              ))}
-            </div>
-          ) : (
-            <pre className="task-card__result-pre">{String(result)}</pre>
-          )}
+          <ResultBlock result={result} />
         </div>
       )}
 

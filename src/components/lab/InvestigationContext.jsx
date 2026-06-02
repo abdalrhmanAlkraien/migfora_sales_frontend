@@ -68,6 +68,8 @@ function DnsSection({ dns, nsLookup }) {
   )
 }
 
+// ── WHOIS specific renderer ───────────────────────────────────────────────────
+
 function WhoisSection({ whois }) {
   return (
     <ContextSection title="WHOIS" icon={
@@ -91,6 +93,7 @@ function WhoisSection({ whois }) {
   )
 }
 
+// ── Header specific renderer ───────────────────────────────────────────────────
 function HeadersSection({ headers }) {
   return (
     <ContextSection title="Headers" icon={
@@ -99,21 +102,64 @@ function HeadersSection({ headers }) {
       </svg>
     }>
       <div className="ctx-kv-list">
-        <KVRow label="HTTPS"       value={headers.httpsAvailable ? 'Available' : 'Not available'} />
-        <KVRow label="Status"      value={headers.httpStatusCode} />
-        <KVRow label="Server"      value={headers.server} />
+        <KVRow label="HTTPS"        value={headers.httpsAvailable ? 'Available' : 'Not available'} />
+        <KVRow label="Status"       value={headers.httpStatusCode} />
+        <KVRow label="Server"       value={headers.server} />
         <KVRow label="X-Powered-By" value={headers.xPoweredBy} />
-        <KVRow label="X-Frame"     value={headers.xFrameOptions} />
-        <KVRow label="CSP"         value={headers.contentSecurityPolicy} />
-        <KVRow label="HSTS"        value={headers.strictTransportSecurity} />
-        <KVRow label="CF-Ray"      value={headers.cfRay} />
+        <KVRow label="X-Frame"      value={headers.xFrameOptions} />
+        <KVRow label="CSP"          value={headers.contentSecurityPolicy} />
+        <KVRow label="HSTS"         value={headers.strictTransportSecurity} />
+        <KVRow label="CF-Ray"       value={headers.cfRay} />
       </div>
+
+      {headers.allHeaders && Object.keys(headers.allHeaders).length > 0 && (
+        <AllHeadersSection allHeaders={headers.allHeaders} />
+      )}
     </ContextSection>
   )
 }
 
+function AllHeadersSection({ allHeaders }) {
+  const [open, setOpen] = useState(false)
+  return (
+    <div className="ctx-collapsible">
+      <button className="ctx-collapsible-trigger" onClick={() => setOpen((p) => !p)}>
+        <span>All Headers ({Object.keys(allHeaders).length})</span>
+        <svg viewBox="0 0 12 12" fill="none"
+          style={{ transform: open ? 'rotate(180deg)' : 'none', transition: 'transform .2s' }}>
+          <path d="M2 4l4 4 4-4" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round"/>
+        </svg>
+      </button>
+      {open && (
+        <div className="ctx-kv-list ctx-kv-list--nested">
+          {Object.entries(allHeaders).map(([k, v]) => (
+            <div key={k} className="ctx-kv-row">
+              <span className="ctx-kv-key">{k}</span>
+              <span className="ctx-kv-val">{String(v)}</span>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  )
+}
+
 function PerformanceSection({ perf }) {
-  const rating = PERFORMANCE_RATING[perf.rating] || { label: perf.rating, cls: 'average' }
+  const RATING_MAP = {
+    EXCELLENT: { label: 'Excellent', cls: 'excellent' },
+    GOOD:      { label: 'Good',      cls: 'good' },
+    AVERAGE:   { label: 'Average',   cls: 'average' },
+    POOR:      { label: 'Poor',      cls: 'poor' },
+  }
+  const rating = RATING_MAP[perf.rating] || { label: perf.rating, cls: 'average' }
+
+  const formatSize = (bytes) => {
+    if (!bytes) return null
+    if (bytes < 1024)        return `${bytes} B`
+    if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`
+    return `${(bytes / (1024 * 1024)).toFixed(1)} MB`
+  }
+
   return (
     <ContextSection title="Performance" icon={
       <svg viewBox="0 0 14 14" fill="none">
@@ -122,20 +168,32 @@ function PerformanceSection({ perf }) {
       </svg>
     }>
       <div className="ctx-kv-list">
-        <KVRow label="TTFB"    value={`${perf.ttfbMs} ms`} />
-        <KVRow label="DNS"     value={`${perf.dnsMs} ms`} />
-        <KVRow label="Connect" value={`${perf.connectMs} ms`} />
-        <KVRow label="TLS"     value={`${perf.tlsMs} ms`} />
-        <KVRow label="Total"   value={`${perf.totalMs} ms`} />
+        <KVRow label="TTFB"        value={perf.ttfbMs    !== undefined ? `${perf.ttfbMs} ms`    : null} />
+        <KVRow label="DNS"         value={perf.dnsMs     !== undefined ? `${perf.dnsMs} ms`     : null} />
+        <KVRow label="Connect"     value={perf.connectMs !== undefined ? `${perf.connectMs} ms` : null} />
+        <KVRow label="TLS"         value={perf.tlsMs     !== undefined ? `${perf.tlsMs} ms`     : null} />
+        <KVRow label="Total"       value={perf.totalMs   !== undefined ? `${perf.totalMs} ms`   : null} />
+        <KVRow label="HTTP Code"   value={perf.httpCode} />
+        <KVRow label="Page Size"   value={formatSize(perf.sizeBytes)} />
       </div>
-      <span className={`ctx-perf-rating ctx-perf-rating--${rating.cls}`}>
-        {rating.label}
-      </span>
+      <div style={{ marginTop: 8 }}>
+        <span className={`ctx-perf-rating ctx-perf-rating--${rating.cls}`}>
+          {rating.label}
+        </span>
+      </div>
     </ContextSection>
   )
 }
 
+// ── SSL specific renderer ───────────────────────────────────────────────────
+
 function SslSection({ ssl }) {
+  const EXPIRY_STATUS = {
+    VALID:         { label: 'Valid',         cls: 'valid' },
+    EXPIRING_SOON: { label: 'Expiring Soon', cls: 'expiring-soon' },
+    EXPIRED:       { label: 'Expired',       cls: 'expired' },
+  }
+
   return (
     <ContextSection title="SSL Certificate" icon={
       <svg viewBox="0 0 14 14" fill="none">
@@ -144,11 +202,19 @@ function SslSection({ ssl }) {
       </svg>
     }>
       <div className="ctx-kv-list">
-        <KVRow label="Issuer"  value={ssl.issuer} />
-        <KVRow label="Expiry"  value={ssl.expiry?.slice(0, 10)} />
-        <KVRow label="Valid"   value={ssl.valid ? 'Yes' : 'No'} />
-        <KVRow label="Certs found" value={ssl.totalCertsFound} />
+        <KVRow label="Issuer"            value={ssl.issuer} />
+        <KVRow label="Expiry"            value={ssl.expiry?.slice(0, 10)} />
+        <KVRow label="Valid"             value={ssl.valid ? 'Yes' : 'No'} />
+        <KVRow label="Days until expiry" value={ssl.daysUntilExpiry !== undefined ? `${ssl.daysUntilExpiry} days` : null} />
+        <KVRow label="Certs found"       value={ssl.totalCertsFound} />
       </div>
+      {ssl.expiryStatus && (
+        <div style={{ marginTop: 8 }}>
+          <span className={`ctx-ssl-badge ctx-ssl-badge--${(EXPIRY_STATUS[ssl.expiryStatus]?.cls || 'valid')}`}>
+            {EXPIRY_STATUS[ssl.expiryStatus]?.label || ssl.expiryStatus}
+          </span>
+        </div>
+      )}
     </ContextSection>
   )
 }

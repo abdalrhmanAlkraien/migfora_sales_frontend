@@ -133,15 +133,42 @@ function WhoisResult({ result, rawOutput }) {
   )
 }
 
+// ── Header specific renderer ───────────────────────────────────────────────────
+function HeadersSection({ headers }) {
+  return (
+    <ContextSection title="Headers" icon={
+      <svg viewBox="0 0 14 14" fill="none">
+        <path d="M2 4h10M2 7h10M2 10h6" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round"/>
+      </svg>
+    }>
+      <div className="ctx-kv-list">
+        <KVRow label="HTTPS"       value={headers.httpsAvailable ? 'Yes' : 'No'} />
+        <KVRow label="Status"      value={headers.httpStatusCode} />
+        <KVRow label="Server"      value={headers.server} />
+        <KVRow label="X-Powered-By" value={headers.xPoweredBy} />
+        <KVRow label="X-Frame"     value={headers.xFrameOptions} />
+        <KVRow label="CSP"         value={headers.contentSecurityPolicy} />
+        <KVRow label="HSTS"        value={headers.strictTransportSecurity} />
+        <KVRow label="CF-Ray"      value={headers.cfRay} />
+      </div>
+
+      {headers.allHeaders && Object.keys(headers.allHeaders).length > 0 && (
+        <NestedSection label="All Headers" data={headers.allHeaders} />
+      )}
+    </ContextSection>
+  )
+}
+
+
 // ── Generic key-value renderer ────────────────────────────────────────────────
 function GenericResult({ result, rawOutput }) {
   const [showRaw, setShowRaw] = useState(false)
 
   const topLevel = Object.entries(result).filter(([_, v]) =>
-    typeof v !== 'object' || Array.isArray(v)
+    v === null || typeof v !== 'object' || Array.isArray(v)
   )
   const nested = Object.entries(result).filter(([_, v]) =>
-    typeof v === 'object' && !Array.isArray(v) && v !== null
+    v !== null && typeof v === 'object' && !Array.isArray(v)
   )
 
   return (
@@ -151,7 +178,7 @@ function GenericResult({ result, rawOutput }) {
           <div key={k} className="trd__kv-row">
             <span className="trd__kv-key">{k}</span>
             <span className="trd__kv-val">
-              {Array.isArray(v) ? v.join(', ') : String(v)}
+              {v === null ? '—' : Array.isArray(v) ? v.join(', ') : String(v)}
             </span>
           </div>
         ))}
@@ -163,10 +190,7 @@ function GenericResult({ result, rawOutput }) {
 
       {rawOutput && (
         <div className="trd__collapsible">
-          <button
-            className="trd__collapsible-trigger"
-            onClick={() => setShowRaw((p) => !p)}
-          >
+          <button className="trd__collapsible-trigger" onClick={() => setShowRaw((p) => !p)}>
             <span>Raw output</span>
             <svg viewBox="0 0 12 12" fill="none"
               style={{ transform: showRaw ? 'rotate(180deg)' : 'none', transition: 'transform .2s' }}>
@@ -197,7 +221,14 @@ function NestedSection({ label, data }) {
             <div key={k} className="trd__kv-row">
               <span className="trd__kv-key">{k}</span>
               <span className="trd__kv-val">
-                {typeof v === 'object' ? JSON.stringify(v) : String(v)}
+                {v === null
+                  ? '—'
+                  : Array.isArray(v)
+                    ? v.join(', ')
+                    : typeof v === 'object'
+                      ? JSON.stringify(v)
+                      : String(v)
+                }
               </span>
             </div>
           ))}
@@ -228,9 +259,8 @@ function renderResult(type, result, rawOutput) {
   }
 
   if (typeof result === 'object' && result !== null) {
-    if (type === 'WHOIS') {
-      return <WhoisResult result={result} rawOutput={rawOutput} />
-    }
+    if (type === 'WHOIS')    return <WhoisResult result={result} rawOutput={rawOutput} />
+    if (type === 'SSL_CERT') return <SslResult   result={result} rawOutput={rawOutput} />
     return <GenericResult result={result} rawOutput={rawOutput} />
   }
 

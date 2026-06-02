@@ -183,3 +183,29 @@
   font-family: monospace; font-size: .82rem;
   color: var(--color-navy); word-break: break-all;
 }
+
+.task-card__nested {
+  border-top: 1px solid rgba(13,27,42,.06);
+}
+.task-card__nested-trigger {
+  display: flex; align-items: center; justify-content: space-between;
+  width: 100%; padding: 8px 12px; background: none; border: none;
+  cursor: pointer; transition: background .12s;
+}
+.task-card__nested-trigger:hover { background: rgba(13,27,42,.03); }
+.task-card__nested-body { padding: 0; }
+.task-card__result-row--nested {
+  padding-left: 20px;
+  background: rgba(13,27,42,.015);
+}
+
+.task-card__result-list {
+  display: flex; flex-direction: column; gap: 4px; margin-top: 2px;
+}
+
+.task-card__result-tag {
+  font-family: monospace; font-size: .78rem;
+  color: var(--color-navy); background: rgba(13,27,42,.06);
+  padding: 2px 8px; border-radius: 4px; display: inline-block;
+  width: fit-content;
+}

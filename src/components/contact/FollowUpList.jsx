@@ -1,11 +1,11 @@
 import './styles/FollowUpList.css'
 
 const TYPE_MAP = {
-  CALL:      { label: 'Call',      icon: '📞', cls: 'call' },
-  VISIT:     { label: 'Visit',     icon: '🏢', cls: 'visit' },
-  MEETING:   { label: 'Meeting',   icon: '🤝', cls: 'meeting' },
-  EMAIL:     { label: 'Email',     icon: '✉',  cls: 'email' },
-  WHATSAPP:  { label: 'WhatsApp',  icon: '💬', cls: 'whatsapp' },
+  CALL:     { label: 'Call',     icon: '📞', cls: 'call' },
+  VISIT:    { label: 'Visit',    icon: '🏢', cls: 'visit' },
+  MEETING:  { label: 'Meeting',  icon: '🤝', cls: 'meeting' },
+  EMAIL:    { label: 'Email',    icon: '✉',  cls: 'email' },
+  WHATSAPP: { label: 'WhatsApp', icon: '💬', cls: 'whatsapp' },
 }
 
 const STATUS_MAP = {
@@ -14,15 +14,20 @@ const STATUS_MAP = {
   MISSED:    { label: 'Missed',    cls: 'missed' },
 }
 
-export default function FollowUpList({ followUps, onFollowUpClick, onNew }) {
+export default function FollowUpList({ followUps, loading, onFollowUpClick, onNew }) {
   const sorted = [...followUps].sort(
-    (a, b) => new Date(b.scheduledDate) - new Date(a.scheduledDate)
+    (a, b) => new Date(b.scheduledAt) - new Date(a.scheduledAt)
   )
 
   return (
     <div className="followup-list">
       <div className="followup-list__header">
-        <h2 className="followup-list__title">Follow-up History</h2>
+        <h2 className="followup-list__title">
+          Follow-up History
+          {followUps.length > 0 && (
+            <span className="followup-list__count">{followUps.length}</span>
+          )}
+        </h2>
         <button className="followup-list__new-btn" onClick={onNew}>
           <svg viewBox="0 0 16 16" fill="none">
             <path d="M8 2v12M2 8h12" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
@@ -31,7 +36,9 @@ export default function FollowUpList({ followUps, onFollowUpClick, onNew }) {
         </button>
       </div>
 
-      {sorted.length === 0 ? (
+      {loading ? (
+        <div className="followup-list__loading">Loading…</div>
+      ) : sorted.length === 0 ? (
         <div className="followup-list__empty">
           <p>No follow-ups yet</p>
           <span>Add your first follow-up to start tracking interactions</span>
@@ -39,7 +46,7 @@ export default function FollowUpList({ followUps, onFollowUpClick, onNew }) {
       ) : (
         <div className="followup-list__timeline">
           {sorted.map((fu, i) => {
-            const type   = TYPE_MAP[fu.type]   || { label: fu.type,   icon: '📋', cls: 'call' }
+            const type   = TYPE_MAP[fu.type]    || { label: fu.type,   icon: '📋', cls: 'call' }
             const status = STATUS_MAP[fu.status] || { label: fu.status, cls: 'scheduled' }
             return (
               <div
@@ -65,11 +72,16 @@ export default function FollowUpList({ followUps, onFollowUpClick, onNew }) {
                       </span>
                     </div>
                     <span className="followup-list__date">
-                      {fu.scheduledDate?.slice(0, 16).replace('T', ' ')}
+                      {fu.scheduledAt?.slice(0, 16).replace('T', ' ')}
                     </span>
                   </div>
-                  {fu.note && (
-                    <p className="followup-list__note">{fu.note}</p>
+                  {fu.notes && (
+                    <p className="followup-list__note">{fu.notes}</p>
+                  )}
+                  {fu.outcome && (
+                    <p className="followup-list__outcome">
+                      <span className="followup-list__outcome-label">Outcome:</span> {fu.outcome}
+                    </p>
                   )}
                   <span className="followup-list__by">by {fu.createdBy}</span>
                 </div>

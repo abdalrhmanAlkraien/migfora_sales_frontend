@@ -85,3 +85,22 @@
 .followup-list__by {
   font-family: var(--font-body); font-size: .72rem; color: rgba(13,27,42,.3);
 }
+
+.followup-list__count {
+  font-size: .72rem; font-weight: 700; color: var(--color-orange);
+  background: rgba(255,153,0,.12); padding: 2px 8px; border-radius: 20px;
+  margin-left: 8px;
+}
+.followup-list__loading {
+  padding: 32px; text-align: center;
+  font-family: var(--font-body); font-size: .85rem; color: rgba(13,27,42,.4);
+}
+.followup-list__outcome {
+  font-family: var(--font-body); font-size: .8rem;
+  color: #059669; line-height: 1.5; margin-bottom: 4px;
+  background: rgba(16,185,129,.06); border-radius: 6px;
+  padding: 5px 8px;
+}
+.followup-list__outcome-label {
+  font-weight: 600;
+}

@@ -4,28 +4,27 @@
   overflow: visible; /* ← was hidden, change to visible */
   margin-bottom: 8px;
 }
-.contacts-table__head {
+.contacts-table__head,
+.contacts-table__row {
   display: grid;
-  grid-template-columns: 2fr 1.5fr 1fr 1.5fr 1fr 40px;
-  padding: 10px 20px;
-  border-bottom: 1px solid rgba(13,27,42,.07);
-  background: rgba(13,27,42,.02);
+  grid-template-columns: 1.8fr 1.2fr 0.9fr 1.6fr 1.3fr 40px;
+  padding: 14px 20px;
+  cursor: pointer; outline: none;
+  border-bottom: 1px solid rgba(13,27,42,.05);
+  transition: background .12s; align-items: center;
+  min-width: 0;
 }
 .contacts-table__col {
   font-family: var(--font-body); font-size: .7rem; font-weight: 600;
   letter-spacing: .07em; text-transform: uppercase;
   color: rgba(13,27,42,.35); display: flex; align-items: center;
+  white-space: nowrap; overflow: hidden;
+  min-width: 0;
+  overflow: hidden;
 }
 .contacts-table__body {
   display: flex; flex-direction: column;
   overflow: visible; /* ← add this */
-}
-.contacts-table__row {
-  display: grid;
-  grid-template-columns: 2fr 1.5fr 1fr 1.5fr 1fr 40px;
-  padding: 14px 20px; cursor: pointer; outline: none;
-  border-bottom: 1px solid rgba(13,27,42,.05);
-  transition: background .12s; align-items: center;
 }
 .contacts-table__row:last-child { border-bottom: none; }
 .contacts-table__row:hover { background: rgba(13,27,42,.02); }
@@ -49,6 +48,7 @@
 .contacts-table__text {
   font-family: var(--font-body); font-size: .82rem; color: rgba(13,27,42,.6);
   white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  max-width: 100%;
 }
 .contacts-table__followup {
   font-family: var(--font-body); font-size: .8rem; color: rgba(13,27,42,.5);

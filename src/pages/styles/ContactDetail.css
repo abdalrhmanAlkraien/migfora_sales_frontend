@@ -99,3 +99,8 @@
   padding: 80px 32px; text-align: center;
   font-family: var(--font-body); font-size: .9rem; color: rgba(13,27,42,.4);
 }
+
+.contact-detail__field-value--orange {
+  color: var(--color-orange);
+  font-weight: 600;
+}

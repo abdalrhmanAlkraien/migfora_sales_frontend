@@ -3,27 +3,28 @@ import { createPortal } from 'react-dom'
 import ConfirmDialog from '../common/ConfirmDialog'
 import './styles/FollowUpDrawer.css'
 
-const TYPES   = ['CALL','VISIT','MEETING','EMAIL','WHATSAPP']
+const TYPES    = ['CALL','VISIT','MEETING','EMAIL','WHATSAPP']
 const STATUSES = ['SCHEDULED','DONE','MISSED']
 
 const TYPE_LABELS   = { CALL:'Call', VISIT:'Visit', MEETING:'Meeting', EMAIL:'Email', WHATSAPP:'WhatsApp' }
 const STATUS_LABELS = { SCHEDULED:'Scheduled', DONE:'Done', MISSED:'Missed' }
 
-const EMPTY = { type: 'CALL', scheduledDate: '', note: '', status: 'SCHEDULED' }
+const EMPTY = { type: 'CALL', scheduledAt: '', notes: '', outcome: '', status: 'SCHEDULED' }
 
 export default function FollowUpDrawer({ open, followUp, onClose, onSave, onDelete }) {
-  const [form,        setForm]        = useState(EMPTY)
-  const [deleteOpen,  setDeleteOpen]  = useState(false)
-  const [loading,     setLoading]     = useState(false)
-  const [error,       setError]       = useState('')
+  const [form,       setForm]       = useState(EMPTY)
+  const [deleteOpen, setDeleteOpen] = useState(false)
+  const [loading,    setLoading]    = useState(false)
+  const [error,      setError]      = useState('')
 
   useEffect(() => {
     if (followUp) {
       setForm({
-        type:          followUp.type,
-        scheduledDate: followUp.scheduledDate?.slice(0, 16) || '',
-        note:          followUp.note || '',
-        status:        followUp.status,
+        type:        followUp.type,
+        scheduledAt: followUp.scheduledAt?.slice(0, 16) || '',
+        notes:       followUp.notes    || '',
+        outcome:     followUp.outcome  || '',
+        status:      followUp.status,
       })
     } else {
       setForm(EMPTY)
@@ -46,11 +47,16 @@ export default function FollowUpDrawer({ open, followUp, onClose, onSave, onDele
 
   const handleSubmit = async (e) => {
     e.preventDefault()
-    if (!form.scheduledDate) { setError('Please set a date.'); return }
+    if (!form.scheduledAt) { setError('Please set a date.'); return }
     setLoading(true)
-    await new Promise((r) => setTimeout(r, 500)) // replace with API
-    onSave(form)
-    setLoading(false)
+    setError('')
+    try {
+      await onSave(form)
+    } catch (err) {
+      setError(err?.response?.data?.message || 'Failed to save. Please try again.')
+    } finally {
+      setLoading(false)
+    }
   }
 
   const isEditing = !!followUp
@@ -78,11 +84,9 @@ export default function FollowUpDrawer({ open, followUp, onClose, onSave, onDele
               <label className="fud__label">Type</label>
               <div className="fud__type-group">
                 {TYPES.map((t) => (
-                  <button
-                    key={t} type="button"
+                  <button key={t} type="button"
                     className={`fud__type-btn ${form.type === t ? 'fud__type-btn--active' : ''}`}
-                    onClick={() => setForm((p) => ({ ...p, type: t }))}
-                  >
+                    onClick={() => setForm((p) => ({ ...p, type: t }))}>
                     {TYPE_LABELS[t]}
                   </button>
                 ))}
@@ -91,24 +95,17 @@ export default function FollowUpDrawer({ open, followUp, onClose, onSave, onDele
 
             <div className="fud__field">
               <label className="fud__label">Date & Time <span className="fud__req">*</span></label>
-              <input
-                className="fud__input"
-                type="datetime-local"
-                value={form.scheduledDate}
-                onChange={set('scheduledDate')}
-                required
-              />
+              <input className="fud__input" type="datetime-local"
+                value={form.scheduledAt} onChange={set('scheduledAt')} required />
             </div>
 
             <div className="fud__field">
               <label className="fud__label">Status</label>
               <div className="fud__status-group">
                 {STATUSES.map((s) => (
-                  <button
-                    key={s} type="button"
+                  <button key={s} type="button"
                     className={`fud__status-btn fud__status-btn--${s.toLowerCase()} ${form.status === s ? 'fud__status-btn--active' : ''}`}
-                    onClick={() => setForm((p) => ({ ...p, status: s }))}
-                  >
+                    onClick={() => setForm((p) => ({ ...p, status: s }))}>
                     {STATUS_LABELS[s]}
                   </button>
                 ))}
@@ -116,31 +113,33 @@ export default function FollowUpDrawer({ open, followUp, onClose, onSave, onDele
             </div>
 
             <div className="fud__field">
-              <label className="fud__label">Note</label>
-              <textarea
-                className="fud__input fud__textarea"
-                value={form.note}
-                onChange={set('note')}
-                rows={4}
-                placeholder="What was discussed, outcomes, next steps…"
-              />
+              <label className="fud__label">Notes</label>
+              <textarea className="fud__input fud__textarea"
+                value={form.notes} onChange={set('notes')} rows={3}
+                placeholder="What was discussed, goals for this interaction…" />
             </div>
+
+            {form.status === 'DONE' && (
+              <div className="fud__field">
+                <label className="fud__label">Outcome</label>
+                <textarea className="fud__input fud__textarea"
+                  value={form.outcome} onChange={set('outcome')} rows={3}
+                  placeholder="What was the result? Next steps?" />
+              </div>
+            )}
 
           </div>
 
           <div className="fud__footer">
             {isEditing && (
-              <button
-                type="button"
-                className="fud__btn fud__btn--delete"
-                onClick={() => setDeleteOpen(true)}
-                disabled={loading}
-              >
+              <button type="button" className="fud__btn fud__btn--delete"
+                onClick={() => setDeleteOpen(true)} disabled={loading}>
                 Delete
               </button>
             )}
             <div className="fud__footer-right">
-              <button type="button" className="fud__btn fud__btn--ghost" onClick={onClose} disabled={loading}>
+              <button type="button" className="fud__btn fud__btn--ghost"
+                onClick={onClose} disabled={loading}>
                 Cancel
               </button>
               <button type="submit" className="fud__btn fud__btn--primary" disabled={loading}>
@@ -155,7 +154,7 @@ export default function FollowUpDrawer({ open, followUp, onClose, onSave, onDele
       <ConfirmDialog
         isOpen={deleteOpen}
         title="Delete follow-up"
-        message="Are you sure you want to delete this follow-up? This action cannot be undone."
+        message="Are you sure you want to delete this follow-up?"
         confirmLabel="Delete"
         isDanger
         onConfirm={() => { setDeleteOpen(false); onDelete(followUp.id) }}

@@ -238,6 +238,83 @@ function NestedSection({ label, data }) {
   )
 }
 
+function TechStackResult({ result, rawOutput }) {
+  const [showSources, setShowSources] = useState(false)
+
+  const INFERRED_LABELS = {
+    webServer: 'Web Server', language: 'Language', framework: 'Framework',
+    rendering: 'Rendering', siteName: 'Site Name', cloud: 'Cloud',
+    cdn: 'CDN', dns: 'DNS', deployment: 'Deployment', email: 'Email',
+    analytics: 'Analytics', heatmap: 'Heatmap', payment: 'Payment',
+    crm: 'CRM', support: 'Support', ecommerce: 'E-commerce', cms: 'CMS',
+    backendHint: 'Backend Hint', requestTracking: 'Request Tracking', generator: 'Generator',
+  }
+
+  // task uses inferredFromHeaders, context uses inferred — handle both
+  const inferred = result.inferredFromHeaders || result.inferred || {}
+
+  return (
+    <div className="trd__techstack">
+
+      {result.detected?.length > 0 && (
+        <>
+          <div className="trd__section-title">Detected Technologies</div>
+          <div className="trd__tags">
+            {result.detected.map((t) => (
+              <span key={t} className="trd__tag">{t}</span>
+            ))}
+          </div>
+        </>
+      )}
+
+      {Object.keys(inferred).length > 0 && (
+        <>
+          <div className="trd__section-title" style={{ marginTop: 16 }}>Intelligence</div>
+          <div className="trd__kv-list">
+            {Object.entries(inferred)
+              .filter(([_, v]) => v)
+              .map(([k, v]) => (
+                <div key={k} className="trd__kv-row">
+                  <span className="trd__kv-key">{INFERRED_LABELS[k] || k}</span>
+                  <span className="trd__kv-val">{String(v)}</span>
+                </div>
+              ))
+            }
+          </div>
+        </>
+      )}
+
+      {result.sources && Object.keys(result.sources).length > 0 && (
+        <div className="trd__collapsible" style={{ marginTop: 12 }}>
+          <button className="trd__collapsible-trigger" onClick={() => setShowSources((p) => !p)}>
+            <span>Analysis Sources</span>
+            <svg viewBox="0 0 12 12" fill="none"
+              style={{ transform: showSources ? 'rotate(180deg)' : 'none', transition: 'transform .2s' }}>
+              <path d="M2 4l4 4 4-4" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round"/>
+            </svg>
+          </button>
+          {showSources && (
+            <div className="trd__kv-list trd__kv-list--nested">
+              {Object.entries(result.sources).map(([k, v]) => {
+                const ok = v === 'analyzed'
+                return (
+                  <div key={k} className="trd__kv-row">
+                    <span className="trd__kv-key">{k}</span>
+                    <span className="trd__kv-val" style={{ color: ok ? '#059669' : '#dc2626' }}>
+                      {String(v)}
+                    </span>
+                  </div>
+                )
+              })}
+            </div>
+          )}
+        </div>
+      )}
+
+    </div>
+  )
+}
+
 // ── Result router ─────────────────────────────────────────────────────────────
 function renderResult(type, result, rawOutput) {
   if (typeof result === 'string') {
@@ -261,6 +338,8 @@ function renderResult(type, result, rawOutput) {
   if (typeof result === 'object' && result !== null) {
     if (type === 'WHOIS')    return <WhoisResult result={result} rawOutput={rawOutput} />
     if (type === 'SSL_CERT') return <SslResult   result={result} rawOutput={rawOutput} />
+    if (type === 'TECH_STACK') return <TechStackResult result={result} rawOutput={rawOutput} />
+    
     return <GenericResult result={result} rawOutput={rawOutput} />
   }
 

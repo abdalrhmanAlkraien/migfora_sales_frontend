@@ -194,3 +194,11 @@
 .trd__ssl-badge--valid         { background: rgba(16,185,129,.1);  color: #059669; }
 .trd__ssl-badge--expiring-soon { background: rgba(245,158,11,.1);  color: #b45309; }
 .trd__ssl-badge--expired       { background: rgba(220,38,38,.1);   color: #dc2626; }
+
+.trd__tags {
+  display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 4px;
+}
+.trd__tag {
+  font-family: var(--font-body); font-size: .75rem; color: var(--color-navy);
+  background: rgba(13,27,42,.06); padding: 3px 9px; border-radius: 5px;
+}

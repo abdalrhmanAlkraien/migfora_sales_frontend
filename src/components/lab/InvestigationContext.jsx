@@ -220,19 +220,96 @@ function SslSection({ ssl }) {
 }
 
 function TechStackSection({ tech }) {
+  const INFERRED_LABELS = {
+    webServer:       'Web Server',
+    language:        'Language',
+    framework:       'Framework',
+    rendering:       'Rendering',
+    siteName:        'Site Name',
+    cloud:           'Cloud',
+    cdn:             'CDN',
+    dns:             'DNS',
+    deployment:      'Deployment',
+    email:           'Email',
+    analytics:       'Analytics',
+    heatmap:         'Heatmap',
+    payment:         'Payment',
+    crm:             'CRM',
+    support:         'Support',
+    ecommerce:       'E-commerce',
+    cms:             'CMS',
+    backendHint:     'Backend Hint',
+    requestTracking: 'Request Tracking',
+    generator:       'Generator',
+  }
+
+  const [showSources, setShowSources] = useState(false)
+
   return (
     <ContextSection title="Tech Stack" icon={
       <svg viewBox="0 0 14 14" fill="none">
         <path d="M2 4.5l5-3 5 3v5l-5 3-5-3v-5Z" stroke="currentColor" strokeWidth="1.2" strokeLinejoin="round"/>
       </svg>
     }>
-      <div className="ctx-kv-list">
-        <KVRow label="BuiltWith"   value={tech.builtWith} />
-        <KVRow label="Wappalyzer" value={tech.wappalyzer} />
-        <KVRow label="Web Server" value={tech.webServer} />
-        <KVRow label="Language"   value={tech.language} />
-        <KVRow label="CDN"        value={tech.cdn} />
-      </div>
+
+      {/* Detected technologies */}
+      {tech.detected?.length > 0 && (
+        <>
+          <div className="ctx-section-label">Detected Technologies</div>
+          <div className="ctx-tags">
+            {tech.detected.map((t) => (
+              <span key={t} className="ctx-tag">{t}</span>
+            ))}
+          </div>
+        </>
+      )}
+
+      {/* Inferred intel */}
+      {tech.inferred && Object.keys(tech.inferred).length > 0 && (
+        <>
+          <div className="ctx-section-label" style={{ marginTop: 14 }}>Intelligence</div>
+          <div className="ctx-kv-list">
+            {Object.entries(tech.inferred)
+              .filter(([_, v]) => v)
+              .map(([k, v]) => (
+                <div key={k} className="ctx-kv-row">
+                  <span className="ctx-kv-key">{INFERRED_LABELS[k] || k}</span>
+                  <span className="ctx-kv-val">{String(v)}</span>
+                </div>
+              ))
+            }
+          </div>
+        </>
+      )}
+
+      {/* Sources */}
+      {tech.sources && Object.keys(tech.sources).length > 0 && (
+        <div className="ctx-collapsible" style={{ marginTop: 10 }}>
+          <button className="ctx-collapsible-trigger" onClick={() => setShowSources((p) => !p)}>
+            <span>Analysis Sources</span>
+            <svg viewBox="0 0 12 12" fill="none"
+              style={{ transform: showSources ? 'rotate(180deg)' : 'none', transition: 'transform .2s' }}>
+              <path d="M2 4l4 4 4-4" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round"/>
+            </svg>
+          </button>
+          {showSources && (
+            <div className="ctx-kv-list ctx-kv-list--nested">
+              {Object.entries(tech.sources).map(([k, v]) => {
+                const ok = v === 'analyzed'
+                return (
+                  <div key={k} className="ctx-kv-row">
+                    <span className="ctx-kv-key">{k}</span>
+                    <span className="ctx-kv-val" style={{ color: ok ? '#059669' : '#dc2626' }}>
+                      {String(v)}
+                    </span>
+                  </div>
+                )
+              })}
+            </div>
+          )}
+        </div>
+      )}
+
     </ContextSection>
   )
 }
@@ -272,6 +349,7 @@ function IpInfoSection({ ipInfo }) {
     }>
       <div className="ctx-kv-list">
         <KVRow label="IP"       value={ipInfo.ip} />
+        <KVRow label="Hostname" value={ipInfo.hostname} />
         <KVRow label="Org"      value={ipInfo.org} />
         <KVRow label="ASN"      value={ipInfo.asn} />
         <KVRow label="City"     value={ipInfo.city} />

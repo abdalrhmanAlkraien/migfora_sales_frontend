@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { getInvestigationApi } from '../api/investigations'
 import TaskResultDrawer from '../components/investigation/TaskResultDrawer'
+import GenerateReportModal from '../components/report/GenerateReportModal'
 import './styles/InvestigationDetail.css'
 
 const STATUS_MAP = {
@@ -26,6 +27,7 @@ export default function InvestigationDetail() {
   const [notFound,     setNotFound]     = useState(false)
   const [selectedTask, setSelectedTask] = useState(null)
   const [drawerOpen,   setDrawerOpen]   = useState(false)
+  const [reportModalOpen, setReportModalOpen] = useState(false)
 
   useEffect(() => {
     const fetch = async () => {
@@ -105,7 +107,10 @@ export default function InvestigationDetail() {
               </svg>
               Open Lab
             </button>
-            <button className="inv-detail__btn inv-detail__btn--primary">
+            <button
+              className="inv-detail__btn inv-detail__btn--primary"
+              onClick={() => setReportModalOpen(true)}
+            >
               <svg viewBox="0 0 16 16" fill="none" className="inv-detail__btn-icon">
                 <rect x="2.5" y="1.5" width="11" height="13" rx="1.5" stroke="currentColor" strokeWidth="1.3"/>
                 <path d="M5.5 5.5h5M5.5 8h5M5.5 10.5h3" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round"/>
@@ -208,6 +213,14 @@ export default function InvestigationDetail() {
           )}
         </div>
       </div>
+
+      <GenerateReportModal
+        open={reportModalOpen}
+        investigationId={id}
+        companyId={inv?.companyId}
+        onClose={() => setReportModalOpen(false)}
+        onComplete={() => setReportModalOpen(false)}
+      />
 
       <TaskResultDrawer
         open={drawerOpen}

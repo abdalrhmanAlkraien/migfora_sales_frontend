@@ -17,6 +17,8 @@ import CompanyInvestigations from '../pages/CompanyInvestigations'
 import CompanyContacts from '../pages/CompanyContacts'
 import CreateContact from '../pages/CreateContact'
 import ContactDetail from '../pages/ContactDetail'
+import CompanyReports from '../pages/CompanyReports'
+import ReportDetail from '../pages/ReportDetail'
 
 
 export default function AppRoutes() {
@@ -95,7 +97,14 @@ export default function AppRoutes() {
         }/>
         <Route path="/contacts/:id" element={
           <ProtectedRoute><AppLayout><ContactDetail /></AppLayout></ProtectedRoute>
-        }/>        
+        }/>  
+        
+        <Route path="/companies/:id/reports" element={
+          <ProtectedRoute><AppLayout><CompanyReports /></AppLayout></ProtectedRoute>
+        }/>
+        <Route path="/reports/:id" element={
+          <ProtectedRoute><AppLayout><ReportDetail /></AppLayout></ProtectedRoute>
+        }/>              
 
         {/* Fallback */}
         <Route path="*" element={<Navigate to="/dashboard" replace />} />

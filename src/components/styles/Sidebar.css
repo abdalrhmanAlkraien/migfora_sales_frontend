@@ -112,3 +112,9 @@
 .sub-navbar--shifted {
   left: var(--sidebar-width);
 }
+
+.sidebar__bottom-nav {
+  margin-top: auto;
+  padding-top: 8px;
+  border-top: 1px solid rgba(255,255,255,.06);
+}

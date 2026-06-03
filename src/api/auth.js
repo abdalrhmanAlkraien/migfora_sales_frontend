@@ -63,9 +63,14 @@ export const loginApi = (email, password) => {
  * POST /api/v1/auth/change-password
  * Used on first login when backend issues NEW_PASSWORD_REQUIRED challenge.
  */
-export const changePasswordApi = (email, newPassword, session) => {
+export const changePasswordApi = (email, temporaryPassword, newPassword, session) => {
   if (MOCK_ENABLED) return mockChangePassword(email, newPassword, session)
-  return axiosInstance.post('/auth/change-password', { email, newPassword, session })
+  return axiosInstance.post('/auth/change-password', {
+    email,
+    temporaryPassword,
+    newPassword,
+    session,
+  })
 }
  
 /**

@@ -1,3 +1,11 @@
+body:has(.cp-page) {
+  background-color: var(--color-darkest);
+}
+
+body:has(.login-card) {
+  background-color: var(--color-darkest);
+}
+
 .login-card {
   background-color: var(--color-navy-2);
   border-radius: 16px;

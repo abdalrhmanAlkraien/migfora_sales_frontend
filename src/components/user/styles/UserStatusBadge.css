@@ -1,0 +1,10 @@
+.user-status-badge {
+  font-family: var(--font-body); font-size: .68rem; font-weight: 600;
+  letter-spacing: .05em; text-transform: uppercase;
+  padding: 3px 9px; border-radius: 20px; white-space: nowrap;
+}
+.user-status-badge--confirmed   { background: rgba(16,185,129,.1);  color: #059669; }
+.user-status-badge--pending     { background: rgba(245,158,11,.1);  color: #b45309; }
+.user-status-badge--unconfirmed { background: rgba(13,27,42,.07);   color: rgba(13,27,42,.5); }
+.user-status-badge--archived    { background: rgba(107,114,128,.1); color: #4b5563; }
+.user-status-badge--compromised { background: rgba(220,38,38,.1);   color: #dc2626; }

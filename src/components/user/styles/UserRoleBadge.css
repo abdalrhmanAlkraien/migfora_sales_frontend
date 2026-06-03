@@ -1,0 +1,7 @@
+.user-role-badge {
+  font-family: var(--font-body); font-size: .68rem; font-weight: 600;
+  letter-spacing: .05em; text-transform: uppercase;
+  padding: 3px 9px; border-radius: 20px; white-space: nowrap;
+}
+.user-role-badge--admin { background: rgba(13,27,42,.9);  color: var(--color-orange); }
+.user-role-badge--sales { background: rgba(59,130,246,.1); color: #2563eb; }

@@ -3,7 +3,6 @@ import { useNavigate } from 'react-router-dom'
 import { changePasswordApi } from '../api/auth'
 import useAuthStore from '../store/authStore'
 import appConfig from '../config/appConfig'
-import './styles/Login.css'
 import './styles/ChangePassword.css'
 
 const PASSWORD_RULES = [
@@ -16,14 +15,13 @@ const PASSWORD_RULES = [
 
 export default function ChangePassword() {
   const navigate = useNavigate()
-  const { challengeSession, challengeEmail, setAuth, clearAuth } = useAuthStore()
+  const { challengeSession, challengeEmail, temporaryPassword, setAuth, clearAuth } = useAuthStore()
 
   const [newPassword,     setNewPassword]     = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
   const [error,           setError]           = useState('')
   const [loading,         setLoading]         = useState(false)
 
-  // Guard — no active challenge → back to login
   useEffect(() => {
     if (!challengeSession || !challengeEmail) {
       navigate('/login', { replace: true })
@@ -39,10 +37,12 @@ export default function ChangePassword() {
     if (!canSubmit) return
     setError('')
     setLoading(true)
-
     try {
       const { data } = await changePasswordApi(
-        challengeEmail, newPassword, challengeSession
+        challengeEmail,
+        temporaryPassword,
+        newPassword,
+        challengeSession
       )
       setAuth(
         data[appConfig.auth.accessTokenKey],
@@ -62,85 +62,126 @@ export default function ChangePassword() {
   }
 
   return (
-    <div className="login">
-      <div className="login__card change-password__card">
-        <div className="login__brand">
-          <span className="login__brand-m">M</span>
-          <span className="login__brand-text">IGFORA</span>
-        </div>
-        <p className="login__subtitle">Security Setup</p>
-        <h1 className="login__heading">Set your password</h1>
-        <p className="change-password__info">
-          First login — please create a secure password to continue.
-        </p>
+    <div className="cp-page">
+      <div className="cp-card">
 
-        {error && <div className="form-error" role="alert">{error}</div>}
+        {/* Logo */}
+        <div className="cp-card__logo">
+          MIG<span className="cp-card__logo-accent">FORA</span>
+        </div>
+
+        {/* Heading */}
+        <div className="cp-card__heading-group">
+          <span className="cp-card__eyebrow">Security Setup</span>
+          <h1 className="cp-card__title">Set your password</h1>
+          <p className="cp-card__subtitle">
+            First login — create a secure password to continue.
+          </p>
+        </div>
+
+        {error && (
+          <div className="cp-card__error" role="alert">{error}</div>
+        )}
 
         <form onSubmit={handleSubmit} noValidate>
-          <div className="form-group">
-            <label className="form-label" htmlFor="new-password">New password</label>
+
+          {/* New password */}
+          <div className="cp-field">
+            <label className="cp-field__label" htmlFor="new-password">
+              New password
+            </label>
             <input
-              id="new-password" type="password" className="form-input"
-              placeholder="••••••••" value={newPassword}
+              id="new-password"
+              type="password"
+              className="cp-field__input"
+              placeholder="••••••••"
+              value={newPassword}
               onChange={(e) => setNewPassword(e.target.value)}
-              required autoComplete="new-password"
+              required
+              autoComplete="new-password"
             />
           </div>
 
+          {/* Password rules */}
           {newPassword.length > 0 && (
-            <ul className="change-password__rules">
+            <ul className="cp-rules">
               {PASSWORD_RULES.map((rule) => (
-                <li key={rule.label}
-                  className={`change-password__rule ${rule.test(newPassword) ? 'change-password__rule--pass' : ''}`}
+                <li
+                  key={rule.label}
+                  className={`cp-rules__item ${rule.test(newPassword) ? 'cp-rules__item--pass' : ''}`}
                 >
-                  <span className="change-password__rule-icon" aria-hidden="true">
-                    {rule.test(newPassword) ? '✓' : '○'}
-                  </span>
+                  <svg viewBox="0 0 12 12" fill="none" className="cp-rules__icon">
+                    {rule.test(newPassword)
+                      ? <path d="M2 6l3 3 5-5" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round"/>
+                      : <circle cx="6" cy="6" r="4.5" stroke="currentColor" strokeWidth="1.2"/>
+                    }
+                  </svg>
                   {rule.label}
                 </li>
               ))}
             </ul>
           )}
 
-          <div className="form-group">
-            <label className="form-label" htmlFor="confirm-password">Confirm password</label>
+          {/* Confirm password */}
+          <div className="cp-field">
+            <label className="cp-field__label" htmlFor="confirm-password">
+              Confirm password
+            </label>
             <input
-              id="confirm-password" type="password"
-              className={`form-input ${
+              id="confirm-password"
+              type="password"
+              className={`cp-field__input ${
                 confirmPassword.length > 0
                   ? passwordsMatch
-                    ? 'change-password__input--match'
-                    : 'change-password__input--mismatch'
+                    ? 'cp-field__input--match'
+                    : 'cp-field__input--mismatch'
                   : ''
               }`}
-              placeholder="••••••••" value={confirmPassword}
+              placeholder="••••••••"
+              value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
-              required autoComplete="new-password"
+              required
+              autoComplete="new-password"
             />
             {confirmPassword.length > 0 && !passwordsMatch && (
-              <span className="change-password__match-hint">
+              <span className="cp-field__hint cp-field__hint--error">
                 Passwords do not match
+              </span>
+            )}
+            {confirmPassword.length > 0 && passwordsMatch && (
+              <span className="cp-field__hint cp-field__hint--ok">
+                Passwords match
               </span>
             )}
           </div>
 
-          <button type="submit" className="form-btn" disabled={!canSubmit}>
+          {/* Actions */}
+          <button
+            type="submit"
+            className="cp-card__submit"
+            disabled={!canSubmit}
+          >
             {loading
-              ? <span className="login__spinner" aria-label="Updating…" />
+              ? <span className="cp-card__spinner" />
               : 'Set Password & Sign In'
             }
           </button>
-          <button type="button" className="form-btn-ghost"
+
+          <button
+            type="button"
+            className="cp-card__back"
             onClick={() => { clearAuth(); navigate('/login', { replace: true }) }}
             disabled={loading}
           >
             Back to Login
           </button>
+
         </form>
 
-        <p className="login__footer-note">
+        <p className="cp-card__footer">
           MIGFORA internal use only — unauthorised access is prohibited
         </p>
+
       </div>
     </div>
   )

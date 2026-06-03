@@ -19,6 +19,10 @@ import CreateContact from '../pages/CreateContact'
 import ContactDetail from '../pages/ContactDetail'
 import CompanyReports from '../pages/CompanyReports'
 import ReportDetail from '../pages/ReportDetail'
+import UserManagement from '../pages/UserManagement'
+import UserProfile from '../pages/UserProfile'
+import UserDetail from '../pages/UserDetail'
+import AdminJobs from '../pages/AdminJobs'
 
 
 export default function AppRoutes() {
@@ -51,8 +55,8 @@ export default function AppRoutes() {
             </AppLayout>
           </ProtectedRoute>
         }/>
-
-        <Route path="/comapnies" element={
+        
+        <Route path="/companies" element={
           <ProtectedRoute>
             <AppLayout>
               <Companies />
@@ -106,6 +110,20 @@ export default function AppRoutes() {
           <ProtectedRoute><AppLayout><ReportDetail /></AppLayout></ProtectedRoute>
         }/>              
 
+        <Route path="/users" element={
+          <ProtectedRoute adminOnly><AppLayout><UserManagement /></AppLayout></ProtectedRoute>
+        }/>
+        <Route path="/profile" element={
+          <ProtectedRoute><AppLayout><UserProfile /></AppLayout></ProtectedRoute>
+        }/>
+
+        <Route path="/users/:sub" element={
+          <ProtectedRoute adminOnly><AppLayout><UserDetail /></AppLayout></ProtectedRoute>
+        }/>  
+
+        <Route path="/admin/jobs" element={
+          <ProtectedRoute adminOnly><AppLayout><AdminJobs /></AppLayout></ProtectedRoute>
+        }/>
         {/* Fallback */}
         <Route path="*" element={<Navigate to="/dashboard" replace />} />
 

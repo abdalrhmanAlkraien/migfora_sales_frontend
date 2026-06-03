@@ -1,7 +1,10 @@
 .auth-layout {
   min-height: 100vh;
-  background-color: var(--color-navy);
+  width: 100%;
+  background-color: var(--color-darkest);  /* ← was --color-navy */
   display: flex;
   align-items: center;
   justify-content: center;
+  padding: 24px;
+  box-sizing: border-box;
 }

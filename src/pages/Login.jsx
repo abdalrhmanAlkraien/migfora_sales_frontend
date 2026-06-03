@@ -21,11 +21,6 @@ export default function Login() {
 
     try {
       const { data } = await loginApi(identifier, password)
-      if (data.challenge === appConfig.auth.challengeNewPassword) {
-        setChallenge(data.session, identifier)
-        navigate('/change-password')
-        return
-      }
       setAuth(
         data[appConfig.auth.accessTokenKey],
         data[appConfig.auth.refreshTokenKey],
@@ -35,6 +30,15 @@ export default function Login() {
       navigate('/dashboard')
 
     } catch (err) {
+      const status = err?.response?.status
+      const data   = err?.response?.data
+
+      if (status === 428 && data?.challenge === appConfig.auth.challengeNewPassword) {
+        setChallenge(data.session, identifier, password)
+        navigate('/change-password')
+        return
+      }
+
       setError(
         err.response?.data?.[appConfig.auth.messageKey] ||
         'Login failed. Please check your credentials.'

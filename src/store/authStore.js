@@ -36,25 +36,25 @@ const useAuthStore = create((set) => ({
   },
 
   /** Called when backend returns NEW_PASSWORD_REQUIRED challenge */
-  setChallenge: (session, email) => {
-    set({ challengeSession: session, challengeEmail: email })
-  },
+temporaryPassword: null,
 
-  /** Full logout — wipe everything */
-  clearAuth: () => {
-    localStorage.removeItem(LS_ACCESS_TOKEN)
-    localStorage.removeItem(LS_REFRESH_TOKEN)
-    localStorage.removeItem(LS_ID_TOKEN)
-    localStorage.removeItem(LS_USER)
-    set({
-      token:            null,
-      refreshToken:     null,
-      idToken:          null,
-      user:             null,
-      challengeSession: null,
-      challengeEmail:   null,
-    })
-  },
+// update setChallenge to also store the temporary password:
+setChallenge: (session, email, temporaryPassword) => set({
+  challengeSession: session,
+  challengeEmail:   email,
+  temporaryPassword,
+}),
+
+// add to clearAuth:
+clearAuth: () => set({
+  token:             null,
+  refreshToken:      null,
+  idToken:           null,
+  user:              null,
+  challengeSession:  null,
+  challengeEmail:    null,
+  temporaryPassword: null,
+}),
 
   /** Silently update tokens after a refresh call (keeps user object intact) */
   updateTokens: (accessToken, refreshToken, idToken) => {

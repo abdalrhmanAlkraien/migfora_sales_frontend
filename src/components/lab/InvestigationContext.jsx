@@ -391,6 +391,153 @@ function ShodanSection({ shodan }) {
   )
 }
 
+function DnsHistorySection({ dnsHistory }) {
+  const [showFull, setShowFull] = useState(false)
+  return (
+    <ContextSection title="DNS History" icon={
+      <svg viewBox="0 0 14 14" fill="none">
+        <circle cx="7" cy="7" r="5.5" stroke="currentColor" strokeWidth="1.2"/>
+        <path d="M7 4v3l2 1.5" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round"/>
+      </svg>
+    }>
+      <div className="ctx-kv-list">
+        <KVRow label="Total Records" value={dnsHistory.totalRecords} />
+        <KVRow label="Real IP Found" value={dnsHistory.realIpFound ? 'Yes' : 'No'} />
+        {dnsHistory.realIp && (
+          <div className="ctx-kv-row">
+            <span className="ctx-kv-key">Real IP</span>
+            <span className="ctx-kv-val" style={{ color: '#059669', fontWeight: 600 }}>{dnsHistory.realIp}</span>
+          </div>
+        )}
+      </div>
+
+      {dnsHistory.nonCdnIps?.length > 0 && (
+        <>
+          <div className="ctx-section-label" style={{ marginTop: 10 }}>Non-CDN IPs</div>
+          <div className="ctx-kv-list">
+            {dnsHistory.nonCdnIps.map((r, i) => (
+              <div key={i} className="ctx-kv-row">
+                <span className="ctx-kv-key" style={{ color: '#059669' }}>{r.ip}</span>
+                <span className="ctx-kv-val">{r.host}</span>
+              </div>
+            ))}
+          </div>
+        </>
+      )}
+
+      {dnsHistory.fullHistory?.length > 0 && (
+        <div className="ctx-collapsible" style={{ marginTop: 10 }}>
+          <button className="ctx-collapsible-trigger" onClick={() => setShowFull((p) => !p)}>
+            <span>Full History ({dnsHistory.fullHistory.length})</span>
+            <svg viewBox="0 0 12 12" fill="none"
+              style={{ transform: showFull ? 'rotate(180deg)' : 'none', transition: 'transform .2s' }}>
+              <path d="M2 4l4 4 4-4" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round"/>
+            </svg>
+          </button>
+          {showFull && (
+            <div className="ctx-kv-list ctx-kv-list--nested">
+              {dnsHistory.fullHistory.map((r, i) => (
+                <div key={i} className="ctx-kv-row">
+                  <span className="ctx-kv-key" style={{ color: r.isCdn === 'false' ? '#059669' : undefined }}>
+                    {r.ip}
+                  </span>
+                  <span className="ctx-kv-val">
+                    {r.host || r.type || ''}{r.note ? ` · ${r.note}` : ''}{r.isCdn === 'false' ? ' ✓' : ''}
+                  </span>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
+    </ContextSection>
+  )
+}
+
+function DirectScanSection({ directScan }) {
+  return (
+    <ContextSection title="Direct IP Scan" icon={
+      <svg viewBox="0 0 14 14" fill="none">
+        <circle cx="7" cy="7" r="2" stroke="currentColor" strokeWidth="1.2"/>
+        <path d="M7 1.5v2M7 10.5v2M1.5 7h2M10.5 7h2" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round"/>
+      </svg>
+    }>
+      <div className="ctx-kv-list">
+        <KVRow label="Scanned IP"    value={directScan.scannedIp} />
+        <KVRow label="Real Server"   value={directScan.realServer} />
+        <KVRow label="HTTP"          value={directScan.httpReachable ? 'Reachable' : 'Not reachable'} />
+        <KVRow label="HTTPS"         value={directScan.httpsReachable ? 'Reachable' : 'Not reachable'} />
+        <KVRow label="Load Balanced" value={directScan.loadBalanced ? 'Yes' : 'No'} />
+        <KVRow label="Orchestration" value={directScan.orchestration} />
+      </div>
+    </ContextSection>
+  )
+}
+
+function SubdomainScanSection({ subdomainScan }) {
+  const FLAG_COLORS = {
+    API_ENDPOINT:     '#7c3aed',
+    ACCESSIBLE:       '#059669',
+    DEV_ENVIRONMENT:  '#b45309',
+    FORBIDDEN_EXISTS: '#b45309',
+    REAL_IP_EXPOSED:  '#dc2626',
+  }
+
+  return (
+    <ContextSection title="Subdomain Scan" icon={
+      <svg viewBox="0 0 14 14" fill="none">
+        <circle cx="7" cy="3" r="1.5" stroke="currentColor" strokeWidth="1.2"/>
+        <circle cx="3" cy="11" r="1.5" stroke="currentColor" strokeWidth="1.2"/>
+        <circle cx="11" cy="11" r="1.5" stroke="currentColor" strokeWidth="1.2"/>
+        <path d="M7 4.5v2M7 6.5L3 9.5M7 6.5l4 3" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round"/>
+      </svg>
+    }>
+      <div className="ctx-kv-list">
+        <KVRow label="Total Scanned" value={subdomainScan.totalScanned} />
+        <KVRow label="Flagged"       value={subdomainScan.flaggedCount} />
+      </div>
+
+      {subdomainScan.flagged?.length > 0 && (
+        <>
+          <div className="ctx-section-label" style={{ marginTop: 10 }}>Flagged</div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+            {subdomainScan.flagged.map((s, i) => (
+              <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '7px 10px', background: 'rgba(13,27,42,.03)', borderRadius: 7, border: '1px solid rgba(13,27,42,.07)' }}>
+                <span style={{ width: 7, height: 7, borderRadius: '50%', flexShrink: 0, background: s.reachable ? '#10b981' : 'rgba(13,27,42,.2)' }} />
+                <span style={{ fontFamily: 'monospace', fontSize: '.78rem', color: 'var(--color-navy)', flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                  {s.subdomain}
+                </span>
+                <div style={{ display: 'flex', gap: 3, flexShrink: 0 }}>
+                  {s.flags?.map((f) => (
+                    <span key={f} style={{ fontFamily: 'var(--font-body)', fontSize: '.6rem', fontWeight: 600, padding: '1px 5px', borderRadius: 20, background: `${FLAG_COLORS[f] || '#6b7280'}18`, color: FLAG_COLORS[f] || '#6b7280' }}>
+                      {f.replace(/_/g, ' ')}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+        </>
+      )}
+
+      {subdomainScan.subdomains?.length > 0 && (
+        <>
+          <div className="ctx-section-label" style={{ marginTop: 10 }}>
+            All Subdomains ({subdomainScan.subdomains.length})
+          </div>
+          <div className="ctx-tags">
+            {subdomainScan.subdomains.map((s, i) => (
+              <span key={i} className="ctx-tag" style={{ fontFamily: 'monospace', fontSize: '.72rem' }}>
+                {s.subdomain}
+              </span>
+            ))}
+          </div>
+        </>
+      )}
+    </ContextSection>
+  )
+}
+
 export default function InvestigationContext({ context, loading, onRefresh }) {
   if (loading) {
     return (
@@ -445,6 +592,9 @@ export default function InvestigationContext({ context, loading, onRefresh }) {
           {context.subdomains && <SubdomainsSection sub={context.subdomains} />}
           {context.ipInfo     && <IpInfoSection     ipInfo={context.ipInfo} />}
           {context.shodan     && <ShodanSection     shodan={context.shodan} />}
+          {context.dnsHistory    && <DnsHistorySection    dnsHistory={context.dnsHistory} />}
+          {context.directScan    && <DirectScanSection    directScan={context.directScan} />}
+          {context.subdomainScan && <SubdomainScanSection subdomainScan={context.subdomainScan} />}
         </div>
       )}
     </div>

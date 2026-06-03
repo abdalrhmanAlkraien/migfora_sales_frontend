@@ -28,11 +28,16 @@ function ResultBlock({ result }) {
   }
 
   if (typeof result === 'object' && result !== null) {
-    const flat   = Object.entries(result).filter(([_, v]) =>
-      v === null || typeof v !== 'object' || Array.isArray(v)
+    const flat = Object.entries(result).filter(([_, v]) =>
+      v === null ||
+      typeof v === 'number' ||
+      typeof v === 'boolean' ||
+      typeof v === 'string' ||
+      (Array.isArray(v) && v.every((item) => typeof item !== 'object'))
     )
     const nested = Object.entries(result).filter(([_, v]) =>
-      v !== null && typeof v === 'object' && !Array.isArray(v)
+      (typeof v === 'object' && v !== null && !Array.isArray(v)) ||
+      (Array.isArray(v) && v.some((item) => typeof item === 'object'))
     )
 
     return (
@@ -44,7 +49,7 @@ function ResultBlock({ result }) {
               {Array.isArray(v) ? (
                 <div className="task-card__result-list">
                   {v.map((item, i) => (
-                    <span key={i} className="task-card__result-tag">{item}</span>
+                    <span key={i} className="task-card__result-tag">{String(item)}</span>
                   ))}
                 </div>
               ) : v === null ? '—' : String(v)}
@@ -63,22 +68,35 @@ function ResultBlock({ result }) {
 
 function NestedBlock({ label, data }) {
   const [open, setOpen] = useState(false)
+
+  const entries = Array.isArray(data)
+    ? data.map((item, i) => [String(i + 1), item])
+    : Object.entries(data)
+
   return (
     <div className="task-card__nested">
       <button className="task-card__nested-trigger" onClick={() => setOpen((p) => !p)}>
-        <span className="task-card__result-key">{label}</span>
+        <span className="task-card__result-key">
+          {label} {Array.isArray(data) ? `(${data.length})` : ''}
+        </span>
         <svg viewBox="0 0 10 6" fill="none"
-          style={{ transform: open ? 'rotate(180deg)' : 'none', transition: 'transform .2s', width: 10, height: 10 }}>
+          style={{ transform: open ? 'rotate(180deg)' : 'none', transition: 'transform .2s', width: 10, height: 10, flexShrink: 0 }}>
           <path d="M1 1l4 4 4-4" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/>
         </svg>
       </button>
       {open && (
         <div className="task-card__nested-body">
-          {Object.entries(data).map(([k, v]) => (
-            <div key={k} className="task-card__result-row task-card__result-row--nested">
-              <span className="task-card__result-key">{k}</span>
-              <span className="task-card__result-val">{renderValue(v)}</span>
-            </div>
+          {entries.map(([k, v]) => (
+            typeof v === 'object' && v !== null ? (
+              <NestedBlock key={k} label={k} data={v} />
+            ) : (
+              <div key={k} className="task-card__result-row task-card__result-row--nested">
+                <span className="task-card__result-key">{k}</span>
+                <span className="task-card__result-val">
+                  {v === null ? '—' : Array.isArray(v) ? v.join(', ') : String(v)}
+                </span>
+              </div>
+            )
           ))}
         </div>
       )}

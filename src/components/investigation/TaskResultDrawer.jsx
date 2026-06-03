@@ -160,6 +160,278 @@ function HeadersSection({ headers }) {
 }
 
 
+function DnsHistoryResult({ result }) {
+  const [showFull, setShowFull] = useState(false)
+  return (
+    <div>
+      <div className="trd__section-title">Summary</div>
+      <div className="trd__kv-list">
+        <div className="trd__kv-row">
+          <span className="trd__kv-key">Total Records</span>
+          <span className="trd__kv-val">{result.totalRecords}</span>
+        </div>
+        <div className="trd__kv-row">
+          <span className="trd__kv-key">Real IP Found</span>
+          <span className="trd__kv-val" style={{ color: result.realIpFound ? '#059669' : '#dc2626', fontWeight: 600 }}>
+            {result.realIpFound ? 'Yes' : 'No'}
+          </span>
+        </div>
+        {result.realIp && (
+          <div className="trd__kv-row">
+            <span className="trd__kv-key">Real IP</span>
+            <span className="trd__kv-val" style={{ color: '#059669', fontWeight: 600 }}>{result.realIp}</span>
+          </div>
+        )}
+      </div>
+
+      {result.nonCdnIps?.length > 0 && (
+        <>
+          <div className="trd__section-title" style={{ marginTop: 14 }}>Non-CDN IPs</div>
+          <div className="trd__kv-list">
+            {result.nonCdnIps.map((r, i) => (
+              <div key={i} className="trd__kv-row">
+                <span className="trd__kv-key">{r.ip}</span>
+                <span className="trd__kv-val">{r.host} · {r.source}</span>
+              </div>
+            ))}
+          </div>
+        </>
+      )}
+
+      {result.fullHistory?.length > 0 && (
+        <div className="trd__collapsible" style={{ marginTop: 10 }}>
+          <button className="trd__collapsible-trigger" onClick={() => setShowFull((p) => !p)}>
+            <span>Full History ({result.fullHistory.length} records)</span>
+            <svg viewBox="0 0 12 12" fill="none"
+              style={{ transform: showFull ? 'rotate(180deg)' : 'none', transition: 'transform .2s' }}>
+              <path d="M2 4l4 4 4-4" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round"/>
+            </svg>
+          </button>
+          {showFull && (
+            <div className="trd__kv-list trd__kv-list--nested">
+              {result.fullHistory.map((r, i) => (
+                <div key={i} className="trd__kv-row">
+                  <span className="trd__kv-key" style={{ color: r.isCdn === 'false' ? '#059669' : undefined }}>
+                    {r.ip}
+                  </span>
+                  <span className="trd__kv-val">
+                    {r.host || r.type || ''} · {r.source}
+                    {r.note ? ` · ${r.note}` : ''}
+                    {r.isCdn === 'false' ? ' ✓ Real IP' : ''}
+                  </span>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
+    </div>
+  )
+}
+
+function DirectIpScanResult({ result }) {
+  const f = result.findings || {}
+  return (
+    <div>
+      <div className="trd__section-title">Scan Target</div>
+      <div className="trd__kv-list">
+        <div className="trd__kv-row">
+          <span className="trd__kv-key">Scanned IP</span>
+          <span className="trd__kv-val">{result.scannedIp}</span>
+        </div>
+        <div className="trd__kv-row">
+          <span className="trd__kv-key">Domain</span>
+          <span className="trd__kv-val">{result.domain}</span>
+        </div>
+      </div>
+
+      <div className="trd__section-title" style={{ marginTop: 14 }}>Findings</div>
+      <div className="trd__kv-list">
+        <div className="trd__kv-row">
+          <span className="trd__kv-key">Real Server</span>
+          <span className="trd__kv-val">{f.realServer}</span>
+        </div>
+        <div className="trd__kv-row">
+          <span className="trd__kv-key">HTTP</span>
+          <span className="trd__kv-val" style={{ color: f.httpReachable ? '#059669' : '#dc2626' }}>
+            {f.httpReachable ? `Reachable (${f.httpStatusCode})` : 'Not reachable'}
+          </span>
+        </div>
+        <div className="trd__kv-row">
+          <span className="trd__kv-key">HTTPS</span>
+          <span className="trd__kv-val" style={{ color: f.httpsReachable ? '#059669' : '#dc2626' }}>
+            {f.httpsReachable ? 'Reachable' : 'Not reachable'}
+          </span>
+        </div>
+        <div className="trd__kv-row">
+          <span className="trd__kv-key">SSL Termination</span>
+          <span className="trd__kv-val">{f.sslTermination}</span>
+        </div>
+        <div className="trd__kv-row">
+          <span className="trd__kv-key">Load Balanced</span>
+          <span className="trd__kv-val">{f.loadBalanced ? 'Yes' : 'No'}</span>
+        </div>
+        <div className="trd__kv-row">
+          <span className="trd__kv-key">Orchestration</span>
+          <span className="trd__kv-val">{f.orchestration}</span>
+        </div>
+        {f.openPorts?.length > 0 && (
+          <div className="trd__kv-row">
+            <span className="trd__kv-key">Open Ports</span>
+            <span className="trd__kv-val" style={{ color: '#b45309' }}>{f.openPorts.join(', ')}</span>
+          </div>
+        )}
+        {f.closedPorts?.length > 0 && (
+          <div className="trd__kv-row">
+            <span className="trd__kv-key">Closed Ports</span>
+            <span className="trd__kv-val">{f.closedPorts.join(', ')}</span>
+          </div>
+        )}
+        {f.realTechStack?.length > 0 && (
+          <div className="trd__kv-row">
+            <span className="trd__kv-key">Tech Stack</span>
+            <span className="trd__kv-val">{f.realTechStack.join(', ')}</span>
+          </div>
+        )}
+      </div>
+
+      {f.notes && (
+        <div style={{ marginTop: 10, padding: '10px 12px', background: 'rgba(13,27,42,.04)', borderRadius: 8, fontFamily: 'var(--font-body)', fontSize: '.82rem', color: 'rgba(13,27,42,.6)', lineHeight: 1.5 }}>
+          {f.notes}
+        </div>
+      )}
+    </div>
+  )
+}
+
+function SubdomainScanResult({ result }) {
+  const [showAll, setShowAll] = useState(false)
+
+  const FLAG_COLORS = {
+    API_ENDPOINT:     '#7c3aed',
+    ACCESSIBLE:       '#059669',
+    DEV_ENVIRONMENT:  '#b45309',
+    FORBIDDEN_EXISTS: '#b45309',
+    REAL_IP_EXPOSED:  '#dc2626',
+  }
+
+  const SECURITY_COLORS = {
+    STRONG:   '#059669',
+    MODERATE: '#b45309',
+    WEAK:     '#dc2626',
+  }
+
+  return (
+    <div>
+      <div className="trd__section-title">Summary</div>
+      <div className="trd__kv-list">
+        <div className="trd__kv-row">
+          <span className="trd__kv-key">Total Scanned</span>
+          <span className="trd__kv-val">{result.totalScanned}</span>
+        </div>
+        <div className="trd__kv-row">
+          <span className="trd__kv-key">Flagged</span>
+          <span className="trd__kv-val" style={{ color: result.flaggedCount > 0 ? '#b45309' : '#059669', fontWeight: 600 }}>
+            {result.flaggedCount}
+          </span>
+        </div>
+      </div>
+
+      {result.flagged?.length > 0 && (
+        <>
+          <div className="trd__section-title" style={{ marginTop: 14 }}>Flagged Subdomains</div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+            {result.flagged.map((s, i) => (
+              <SubdomainRow key={i} sub={s} FLAG_COLORS={FLAG_COLORS} SECURITY_COLORS={SECURITY_COLORS} />
+            ))}
+          </div>
+        </>
+      )}
+
+      {result.subdomains?.length > 0 && (
+        <div className="trd__collapsible" style={{ marginTop: 12 }}>
+          <button className="trd__collapsible-trigger" onClick={() => setShowAll((p) => !p)}>
+            <span>All Subdomains ({result.subdomains.length})</span>
+            <svg viewBox="0 0 12 12" fill="none"
+              style={{ transform: showAll ? 'rotate(180deg)' : 'none', transition: 'transform .2s' }}>
+              <path d="M2 4l4 4 4-4" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round"/>
+            </svg>
+          </button>
+          {showAll && (
+            <div style={{ padding: '8px 0' }}>
+              {result.subdomains.map((s, i) => (
+                <SubdomainRow key={i} sub={s} FLAG_COLORS={FLAG_COLORS} SECURITY_COLORS={SECURITY_COLORS} compact />
+              ))}
+            </div>
+          )}
+        </div>
+      )}
+    </div>
+  )
+}
+
+function SubdomainRow({ sub, FLAG_COLORS, SECURITY_COLORS, compact }) {
+  const [open, setOpen] = useState(false)
+  return (
+    <div style={{ border: '1px solid rgba(13,27,42,.08)', borderRadius: 8, overflow: 'hidden' }}>
+      <button
+        style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%', padding: '10px 14px', background: 'none', border: 'none', cursor: 'pointer', gap: 8 }}
+        onClick={() => !compact && setOpen((p) => !p)}
+      >
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8, flex: 1, minWidth: 0 }}>
+          <span style={{ width: 8, height: 8, borderRadius: '50%', flexShrink: 0, background: sub.reachable ? '#10b981' : 'rgba(13,27,42,.2)' }} />
+          <span style={{ fontFamily: 'monospace', fontSize: '.82rem', color: 'var(--color-navy)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+            {sub.subdomain}
+          </span>
+          {sub.statusCode && (
+            <span style={{ fontFamily: 'var(--font-body)', fontSize: '.7rem', color: 'rgba(13,27,42,.4)' }}>
+              {sub.statusCode}
+            </span>
+          )}
+        </div>
+        <div style={{ display: 'flex', gap: 4, flexShrink: 0, flexWrap: 'wrap', justifyContent: 'flex-end' }}>
+          {sub.flags?.map((f) => (
+            <span key={f} style={{ fontFamily: 'var(--font-body)', fontSize: '.62rem', fontWeight: 600, padding: '1px 6px', borderRadius: 20, background: `${FLAG_COLORS[f] || '#6b7280'}18`, color: FLAG_COLORS[f] || '#6b7280' }}>
+              {f.replace(/_/g, ' ')}
+            </span>
+          ))}
+        </div>
+      </button>
+      {open && !compact && sub.analysis && (
+        <div style={{ padding: '0 14px 12px', borderTop: '1px solid rgba(13,27,42,.06)' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
+            {sub.ip && <AnalysisRow label="IP" value={sub.ip} />}
+            {sub.server && <AnalysisRow label="Server" value={sub.server} />}
+            {sub.analysis.purpose && <AnalysisRow label="Purpose" value={sub.analysis.purpose} />}
+            {sub.analysis.responseType && <AnalysisRow label="Response Type" value={sub.analysis.responseType} />}
+            {sub.analysis.securityScore && (
+              <AnalysisRow
+                label="Security"
+                value={`${sub.analysis.securityScore} — ${sub.analysis.securityRating}`}
+                color={SECURITY_COLORS[sub.analysis.securityRating]}
+              />
+            )}
+            {sub.cors && <AnalysisRow label="CORS" value={sub.cors} color="#dc2626" />}
+            {sub.analysis.corsPolicy && <AnalysisRow label="CORS Policy" value={sub.analysis.corsPolicy} color="#dc2626" />}
+            {sub.analysis.detectedTech?.length > 0 && (
+              <AnalysisRow label="Tech" value={sub.analysis.detectedTech.join(', ')} />
+            )}
+          </div>
+        </div>
+      )}
+    </div>
+  )
+}
+
+function AnalysisRow({ label, value, color }) {
+  return (
+    <div style={{ display: 'flex', gap: 12, padding: '6px 0', borderBottom: '1px solid rgba(13,27,42,.04)' }}>
+      <span style={{ fontFamily: 'var(--font-body)', fontSize: '.7rem', fontWeight: 600, letterSpacing: '.05em', textTransform: 'uppercase', color: 'rgba(13,27,42,.35)', minWidth: 90, flexShrink: 0 }}>{label}</span>
+      <span style={{ fontFamily: 'var(--font-body)', fontSize: '.82rem', color: color || 'var(--color-navy)', wordBreak: 'break-word' }}>{value}</span>
+    </div>
+  )
+}
+
 // ── Generic key-value renderer ────────────────────────────────────────────────
 function GenericResult({ result, rawOutput }) {
   const [showRaw, setShowRaw] = useState(false)
@@ -339,7 +611,10 @@ function renderResult(type, result, rawOutput) {
     if (type === 'WHOIS')    return <WhoisResult result={result} rawOutput={rawOutput} />
     if (type === 'SSL_CERT') return <SslResult   result={result} rawOutput={rawOutput} />
     if (type === 'TECH_STACK') return <TechStackResult result={result} rawOutput={rawOutput} />
-    
+    if (type === 'DNS_HISTORY')    return <DnsHistoryResult    result={result} rawOutput={rawOutput} />
+    if (type === 'DIRECT_IP_SCAN') return <DirectIpScanResult  result={result} rawOutput={rawOutput} />
+    if (type === 'SUBDOMAIN_SCAN') return <SubdomainScanResult result={result} rawOutput={rawOutput} />
+
     return <GenericResult result={result} rawOutput={rawOutput} />
   }
 

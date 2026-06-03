@@ -1,0 +1,62 @@
+.dash-inv {
+  background: var(--color-white); border: 1px solid rgba(13,27,42,.08);
+  border-radius: 14px; overflow: hidden;
+}
+.dash-inv__header {
+  padding: 16px 20px; border-bottom: 1px solid rgba(13,27,42,.07);
+}
+.dash-inv__title {
+  font-family: var(--font-heading); font-size: .95rem; font-weight: 700; color: var(--color-navy);
+}
+.dash-inv__list { display: flex; flex-direction: column; }
+.dash-inv__item {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 12px 20px; cursor: pointer; outline: none;
+  border-bottom: 1px solid rgba(13,27,42,.05); transition: background .12s; gap: 12px;
+}
+.dash-inv__item:last-child { border-bottom: none; }
+.dash-inv__item:hover { background: rgba(13,27,42,.02); }
+.dash-inv__item-left { display: flex; align-items: center; gap: 10px; min-width: 0; }
+.dash-inv__icon {
+  width: 32px; height: 32px; border-radius: 8px; flex-shrink: 0;
+  background: rgba(13,27,42,.05); color: var(--color-navy);
+  display: flex; align-items: center; justify-content: center;
+}
+.dash-inv__icon svg { width: 14px; height: 14px; }
+.dash-inv__info { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.dash-inv__domain {
+  font-family: monospace; font-size: .85rem; font-weight: 500;
+  color: var(--color-navy); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.dash-inv__company {
+  font-family: var(--font-body); font-size: .75rem; color: rgba(13,27,42,.4);
+}
+.dash-inv__item-right {
+  display: flex; flex-direction: column; align-items: flex-end; gap: 4px; flex-shrink: 0;
+}
+.dash-inv__status {
+  font-family: var(--font-body); font-size: .65rem; font-weight: 600;
+  letter-spacing: .06em; text-transform: uppercase;
+  padding: 2px 8px; border-radius: 20px;
+}
+.dash-inv__date {
+  font-family: var(--font-body); font-size: .72rem; color: rgba(13,27,42,.35);
+}
+
+.dash-inv__loading {
+  padding: 12px 20px; display: flex; flex-direction: column; gap: 10px;
+}
+.dash-inv__skeleton-row {
+  height: 44px; border-radius: 8px;
+  background: linear-gradient(90deg, rgba(13,27,42,.04) 25%, rgba(13,27,42,.07) 50%, rgba(13,27,42,.04) 75%);
+  background-size: 200% 100%;
+  animation: skeleton-shimmer 1.4s infinite;
+}
+@keyframes skeleton-shimmer {
+  0%   { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+.dash-inv__empty {
+  padding: 32px 20px; text-align: center;
+  font-family: var(--font-body); font-size: .875rem; color: rgba(13,27,42,.35);
+}

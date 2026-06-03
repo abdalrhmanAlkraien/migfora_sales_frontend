@@ -1,0 +1,40 @@
+/* src/components/dashboard/styles/PipelineOverview.css */
+.dash-pipeline {
+  background: var(--color-white); border: 1px solid rgba(13,27,42,.08);
+  border-radius: 14px; overflow: hidden;
+}
+.dash-pipeline__header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 16px 20px; border-bottom: 1px solid rgba(13,27,42,.07);
+}
+.dash-pipeline__title {
+  font-family: var(--font-heading); font-size: .95rem; font-weight: 700; color: var(--color-navy);
+}
+.dash-pipeline__total {
+  font-family: var(--font-body); font-size: .78rem; color: rgba(13,27,42,.35);
+}
+.dash-pipeline__list {
+  display: flex; flex-direction: column; gap: 0; padding: 12px 20px;
+}
+.dash-pipeline__row { margin-bottom: 12px; }
+.dash-pipeline__row:last-child { margin-bottom: 0; }
+.dash-pipeline__row-top {
+  display: flex; align-items: center; justify-content: space-between; margin-bottom: 5px;
+}
+.dash-pipeline__stage {
+  font-family: var(--font-body); font-size: .78rem; color: rgba(13,27,42,.55);
+}
+.dash-pipeline__count {
+  font-family: var(--font-heading); font-size: .85rem; font-weight: 700;
+}
+.dash-pipeline__bar-track {
+  height: 8px;
+  background: rgba(13,27,42,.06);
+  border-radius: 4px;
+  overflow: hidden;
+}
+.dash-pipeline__bar-fill {
+  height: 100%;
+  border-radius: 4px;
+  transition: width .5s cubic-bezier(.22,1,.36,1);
+}

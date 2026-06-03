@@ -1,0 +1,67 @@
+.fud-today {
+  background: var(--color-white); border: 1px solid rgba(13,27,42,.08);
+  border-radius: 14px; overflow: hidden;
+}
+.fud-today__header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 16px 20px; border-bottom: 1px solid rgba(13,27,42,.07);
+}
+.fud-today__header-left { display: flex; align-items: center; gap: 10px; }
+.fud-today__title {
+  font-family: var(--font-heading); font-size: .95rem; font-weight: 700; color: var(--color-navy);
+}
+.fud-today__badge {
+  font-family: var(--font-heading); font-size: .72rem; font-weight: 700;
+  color: #dc2626; background: rgba(220,38,38,.1); padding: 2px 8px; border-radius: 20px;
+}
+.fud-today__date {
+  font-family: var(--font-body); font-size: .78rem; color: rgba(13,27,42,.35);
+}
+.fud-today__empty {
+  display: flex; flex-direction: column; align-items: center;
+  padding: 40px 24px; text-align: center;
+}
+.fud-today__empty-icon { width: 40px; height: 40px; color: rgba(13,27,42,.2); margin-bottom: 10px; }
+.fud-today__empty p {
+  font-family: var(--font-body); font-size: .875rem; color: rgba(13,27,42,.35);
+}
+.fud-today__list { display: flex; flex-direction: column; }
+.fud-today__item {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 14px 20px; gap: 12px; cursor: pointer; outline: none;
+  border-bottom: 1px solid rgba(13,27,42,.05); transition: background .12s;
+}
+.fud-today__item:last-child { border-bottom: none; }
+.fud-today__item:hover { background: rgba(13,27,42,.02); }
+.fud-today__item-left { display: flex; align-items: flex-start; gap: 12px; flex: 1; min-width: 0; }
+.fud-today__type-icon { font-size: 1.1rem; flex-shrink: 0; margin-top: 1px; }
+.fud-today__item-info { flex: 1; min-width: 0; }
+.fud-today__item-top { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 3px; }
+.fud-today__contact {
+  font-family: var(--font-body); font-size: .875rem; font-weight: 500; color: var(--color-navy);
+}
+.fud-today__company {
+  font-family: var(--font-body); font-size: .75rem; color: rgba(13,27,42,.4);
+}
+.fud-today__notes {
+  font-family: var(--font-body); font-size: .78rem; color: rgba(13,27,42,.5);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.fud-today__item-right {
+  display: flex; flex-direction: column; align-items: flex-end; gap: 4px; flex-shrink: 0;
+}
+.fud-today__time {
+  font-family: var(--font-heading); font-size: .9rem; font-weight: 700; color: var(--color-orange);
+}
+.fud-today__type-label {
+  font-family: var(--font-body); font-size: .68rem; font-weight: 500;
+  color: rgba(13,27,42,.4); text-transform: uppercase; letter-spacing: .05em;
+}
+
+.fud-today__loading { padding: 12px 20px; display: flex; flex-direction: column; gap: 12px; }
+.fud-today__skeleton-row {
+  height: 52px; border-radius: 8px;
+  background: linear-gradient(90deg, rgba(13,27,42,.04) 25%, rgba(13,27,42,.07) 50%, rgba(13,27,42,.04) 75%);
+  background-size: 200% 100%;
+  animation: skeleton-shimmer 1.4s infinite;
+}

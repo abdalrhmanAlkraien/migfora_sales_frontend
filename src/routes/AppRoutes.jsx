@@ -13,7 +13,6 @@ import CreateCompany from '../pages/CreateCompany'
 import CreateInvestigation from '../pages/CreateInvestigation'
 import InvestigationDetail from '../pages/InvestigationDetail'
 import InvestigationLab from '../pages/InvestigationLab'
-import CompanyInvestigations from '../pages/CompanyInvestigations'
 import CompanyContacts from '../pages/CompanyContacts'
 import CreateContact from '../pages/CreateContact'
 import ContactDetail from '../pages/ContactDetail'
@@ -23,6 +22,11 @@ import UserManagement from '../pages/UserManagement'
 import UserProfile from '../pages/UserProfile'
 import UserDetail from '../pages/UserDetail'
 import AdminJobs from '../pages/AdminJobs'
+import CompanyPlatforms from '../pages/CompanyPlatforms'
+import CreatePlatform from '../pages/CreatePlatform'
+import PlatformDetail from '../pages/PlatformDetail'
+import PlatformInvestigations from '../pages/PlatformInvestigations'
+import PlatformReports from '../pages/PlatformReports'
 
 
 export default function AppRoutes() {
@@ -80,12 +84,26 @@ export default function AppRoutes() {
           </ProtectedRoute>
         }/>  
 
-        <Route path="/companies/:id/investigations" element={
-          <ProtectedRoute><AppLayout><CompanyInvestigations /></AppLayout></ProtectedRoute>
-        }/>        
-        <Route path="/companies/:id/investigations/new" element={
+        <Route path="/companies/:id/platforms" element={
+          <ProtectedRoute><AppLayout><CompanyPlatforms /></AppLayout></ProtectedRoute>
+        }/>
+        <Route path="/companies/:id/platforms/new" element={
+          <ProtectedRoute><AppLayout><CreatePlatform /></AppLayout></ProtectedRoute>
+        }/>
+        <Route path="/platforms/:id" element={
+          <ProtectedRoute><AppLayout><PlatformDetail /></AppLayout></ProtectedRoute>
+        }/>
+        <Route path="/platforms/:id/investigations" element={
+          <ProtectedRoute><AppLayout><PlatformInvestigations /></AppLayout></ProtectedRoute>
+        }/>
+        <Route path="/platforms/:id/investigations/new" element={
           <ProtectedRoute><AppLayout><CreateInvestigation /></AppLayout></ProtectedRoute>
         }/>
+        <Route path="/platforms/:id/reports" element={
+          <ProtectedRoute><AppLayout><PlatformReports /></AppLayout></ProtectedRoute>
+        }/>
+
+
         <Route path="/investigations/:id" element={
           <ProtectedRoute><AppLayout><InvestigationDetail /></AppLayout></ProtectedRoute>
         }/>

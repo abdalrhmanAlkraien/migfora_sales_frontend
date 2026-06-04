@@ -8,8 +8,15 @@ const INVESTIGATION_STATUS = {
 }
 
 const CONTACT_STATUS = {
-  ACTIVE:   { label: 'Active',   cls: 'done' },
-  INACTIVE: { label: 'Inactive', cls: 'pending' },
+  NEW:           { label: 'New',          cls: 'pending' },
+  CONTACTED:     { label: 'Contacted',    cls: 'running' },
+  INTERESTED:    { label: 'Interested',   cls: 'running' },
+  MEETING_SET:   { label: 'Meeting Set',  cls: 'running' },
+  PROPOSAL_SENT: { label: 'Proposal',     cls: 'running' },
+  NEGOTIATING:   { label: 'Negotiating',  cls: 'running' },
+  WON:           { label: 'Won',          cls: 'done' },
+  LOST:          { label: 'Lost',         cls: 'failed' },
+  ON_HOLD:       { label: 'On Hold',      cls: 'pending' },
 }
 
 const REPORT_STATUS = {
@@ -17,6 +24,24 @@ const REPORT_STATUS = {
   GENERATING: { label: 'Generating', cls: 'running' },
   COMPLETED:  { label: 'Completed',  cls: 'done' },
   FAILED:     { label: 'Failed',     cls: 'failed' },
+}
+
+const PLATFORM_STATUS = {
+  ACTIVE:            { label: 'Active',         cls: 'done' },
+  INACTIVE:          { label: 'Inactive',       cls: 'pending' },
+  UNDER_DEVELOPMENT: { label: 'In Development', cls: 'running' },
+  DECOMMISSIONED:    { label: 'Decommissioned', cls: 'failed' },
+}
+
+const PLATFORM_TYPE_LABELS = {
+  WEBSITE:     'Website',
+  WEB_APP:     'Web App',
+  MOBILE_APP:  'Mobile App',
+  API:         'API',
+  ADMIN_PANEL: 'Admin Panel',
+  E_COMMERCE:  'E-Commerce',
+  PORTAL:      'Portal',
+  OTHER:       'Other',
 }
 
 function InvestigationRow({ item, onClick }) {
@@ -28,6 +53,24 @@ function InvestigationRow({ item, onClick }) {
         <span className="crs__row-title">{item.domain || `Investigation #${item.id}`}</span>
         <span className="crs__row-sub">
           {item.completedTasks}/{item.totalTasks} tasks · {item.createdAt?.slice(0, 10)}
+        </span>
+      </div>
+      <span className={`crs__badge crs__badge--${s.cls}`}>{s.label}</span>
+    </div>
+  )
+}
+
+function PlatformRow({ item, onClick }) {
+  const s = PLATFORM_STATUS[item.status] || PLATFORM_STATUS.ACTIVE
+  return (
+    <div className="crs__row" onClick={() => onClick(item)} role="button" tabIndex={0}
+      onKeyDown={(e) => e.key === 'Enter' && onClick(item)}>
+      <div className="crs__row-main">
+        <span className="crs__row-title">{item.name}</span>
+        <span className="crs__row-sub">
+          {PLATFORM_TYPE_LABELS[item.type] || item.type}
+          {item.domain ? ` · ${item.domain}` : ''}
+          {item.investigationsCount !== undefined ? ` · ${item.investigationsCount} investigations` : ''}
         </span>
       </div>
       <span className={`crs__badge crs__badge--${s.cls}`}>{s.label}</span>
@@ -53,19 +96,29 @@ function ContactRow({ item, onClick }) {
 
 function ReportRow({ item, onClick }) {
   const s = REPORT_STATUS[item.status] || { label: item.status, cls: 'pending' }
+  const TYPE_LABELS = { TECHNICAL_OVERVIEW: 'Technical Overview', SALES_ROADMAP: 'Sales Roadmap' }
   return (
     <div className="crs__row" onClick={() => onClick(item)} role="button" tabIndex={0}
       onKeyDown={(e) => e.key === 'Enter' && onClick(item)}>
       <div className="crs__row-main">
-        <span className="crs__row-title">{item.type} Report #{item.id}</span>
-        <span className="crs__row-sub">{item.createdAt?.slice(0, 10)}</span>
+        <span className="crs__row-title">
+          {item.title || TYPE_LABELS[item.type] || `Report #${item.id}`}
+        </span>
+        <span className="crs__row-sub">
+          {item.platformName ? `${item.platformName} · ` : ''}{item.createdAt?.slice(0, 10)}
+        </span>
       </div>
       <span className={`crs__badge crs__badge--${s.cls}`}>{s.label}</span>
     </div>
   )
 }
 
-const ROW_MAP = { investigation: InvestigationRow, contact: ContactRow, report: ReportRow }
+const ROW_MAP = {
+  investigation: InvestigationRow,
+  platform:      PlatformRow,
+  contact:       ContactRow,
+  report:        ReportRow,
+}
 
 export default function CompanyRecentSection({ title, items = [], total, type, showMorePath, onItemClick }) {
   const navigate = useNavigate()

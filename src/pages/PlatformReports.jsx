@@ -1,9 +1,10 @@
+// src/pages/PlatformReports.jsx
 import { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
-import { getCompanyReportsApi, deleteReportApi } from '../api/reports'
+import { getPlatformReportsApi, deleteReportApi } from '../api/reports'
 import ConfirmDialog from '../components/common/ConfirmDialog'
 import Pagination    from '../components/common/Pagination'
-import './styles/CompanyReports.css'
+import './styles/CompanyReports.css' // reuse same CSS
 
 const STATUS_MAP = {
   GENERATING: { label: 'Generating', cls: 'generating' },
@@ -17,11 +18,12 @@ const TYPE_LABELS = {
   SALES_ROADMAP:      'Sales Roadmap',
 }
 
-export default function CompanyReports() {
-  const { id }   = useParams()
+export default function PlatformReports() {
+  const { id }   = useParams() // platformId
   const navigate = useNavigate()
 
   const [reports,       setReports]       = useState([])
+  const [platformName,  setPlatformName]  = useState('')
   const [loading,       setLoading]       = useState(true)
   const [error,         setError]         = useState('')
   const [page,          setPage]          = useState(0)
@@ -35,10 +37,13 @@ export default function CompanyReports() {
       setLoading(true)
       setError('')
       try {
-        const { data } = await getCompanyReportsApi(id, { page, size: 20 })
+        const { data } = await getPlatformReportsApi(id, { page, size: 20 })
         setReports(data.content)
         setTotalElements(data.totalElements)
         setTotalPages(data.totalPages)
+        if (data.content.length > 0) {
+          setPlatformName(data.content[0].platformName || '')
+        }
       } catch {
         setError('Failed to load reports.')
       } finally {
@@ -64,11 +69,11 @@ export default function CompanyReports() {
   return (
     <div className="company-reports">
       <div className="company-reports__header">
-        <button className="company-reports__back" onClick={() => navigate(`/companies/${id}`)}>
+        <button className="company-reports__back" onClick={() => navigate(`/platforms/${id}`)}>
           <svg viewBox="0 0 16 16" fill="none">
             <path d="M10 3L5 8l5 5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
           </svg>
-          Company
+          {platformName || 'Platform'}
         </button>
         <div className="company-reports__title-row">
           <div className="company-reports__title-left">
@@ -117,12 +122,6 @@ export default function CompanyReports() {
                       <div className="company-reports__row-meta">
                         <span>{TYPE_LABELS[report.type]}</span>
                         <span>·</span>
-                        {report.platformName && (
-                          <>
-                            <span>{report.platformName}</span>
-                            <span>·</span>
-                          </>
-                        )}
                         <span>Investigation #{report.investigationId}</span>
                         <span>·</span>
                         <span>{report.createdAt?.slice(0, 10)}</span>

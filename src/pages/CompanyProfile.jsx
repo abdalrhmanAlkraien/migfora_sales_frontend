@@ -4,10 +4,10 @@ import {
   getCompanyApi,
   updateCompanyApi,
   deleteCompanyApi,
-  getCompanyInvestigationsApi,
   getCompanyContactsApi,
   getCompanyReportsApi,
 } from '../api/companies'
+import { getCompanyPlatformsApi } from '../api/platforms'
 import CompanyProfileHeader from '../components/company/CompanyProfileHeader'
 import CompanyStatsBar      from '../components/company/CompanyStatsBar'
 import CompanyRecentSection from '../components/company/CompanyRecentSection'
@@ -22,11 +22,9 @@ export default function CompanyProfile() {
   const [company,       setCompany]       = useState(null)
   const [loading,       setLoading]       = useState(true)
   const [notFound,      setNotFound]      = useState(false)
-
-  const [investigations, setInvestigations] = useState([])
-  const [contacts,       setContacts]       = useState([])
-  const [reports,        setReports]        = useState([])
-
+  const [platforms,     setPlatforms]     = useState([])
+  const [contacts,      setContacts]      = useState([])
+  const [reports,       setReports]       = useState([])
   const [editOpen,      setEditOpen]      = useState(false)
   const [deleteOpen,    setDeleteOpen]    = useState(false)
   const [deleteLoading, setDeleteLoading] = useState(false)
@@ -36,24 +34,17 @@ export default function CompanyProfile() {
     const fetchAll = async () => {
       setLoading(true)
       try {
-        // fetch company + all 3 recent sections in parallel
-        const [
-          companyRes,
-          investigationsRes,
-          contactsRes,
-          reportsRes,
-        ] = await Promise.all([
+        const [companyRes, platformsRes, contactsRes, reportsRes] = await Promise.all([
           getCompanyApi(id),
-          getCompanyInvestigationsApi(id, { page: 0, size: 3 }),
-          getCompanyContactsApi(id,       { page: 0, size: 3 }),
-          getCompanyReportsApi(id,         { page: 0, size: 3 }),
+          getCompanyPlatformsApi(id),
+          getCompanyContactsApi(id, { page: 0, size: 3 }),
+          getCompanyReportsApi(id,   { page: 0, size: 3 }),
         ])
-
         setCompany(companyRes.data)
-        setInvestigations(investigationsRes.data.content)
+        // platforms returns array directly (not paginated)
+        setPlatforms(Array.isArray(platformsRes.data) ? platformsRes.data.slice(0, 3) : [])
         setContacts(contactsRes.data.content)
         setReports(reportsRes.data.content)
-
       } catch (err) {
         if (err?.response?.status === 400 || err?.response?.status === 404) {
           setNotFound(true)
@@ -93,14 +84,13 @@ export default function CompanyProfile() {
     }
   }
 
-  if (loading) return <div className="company-profile__loading">Loading…</div>
-
+  if (loading)  return <div className="company-profile__loading">Loading…</div>
   if (notFound) return (
     <div className="company-profile__loading">
       Company not found.{' '}
       <button
         onClick={() => navigate('/companies')}
-        style={{ color: 'var(--color-orange)', background: 'none', border: 'none', cursor: 'pointer', fontFamily: 'var(--font-body)' }}
+        style={{ color: 'var(--color-orange)', background: 'none', border: 'none', cursor: 'pointer' }}
       >
         Back to Companies
       </button>
@@ -117,28 +107,32 @@ export default function CompanyProfile() {
       />
 
       <CompanyStatsBar
-        investigations={company.investigationsCount ?? 0}
+        platforms={company.platforms?.length ?? platforms.length ?? 0}
         contacts={company.contactsCount ?? 0}
         reports={company.reportsCount ?? 0}
       />
 
       <div className="company-profile__sections">
+
+        {/* Platforms — replaces investigations */}
         <CompanyRecentSection
-          title="Investigations"
-          items={investigations}
-          total={company.investigationsCount ?? 0}
-          type="investigation"
-          showMorePath={`/companies/${id}/investigations`}  // ← this must be here
-          onItemClick={(item) => navigate(`/investigations/${item.id}`)}
+          title="Platforms"
+          items={platforms}
+          total={company.platforms?.length ?? platforms.length ?? 0}
+          type="platform"
+          showMorePath={`/companies/${id}/platforms`}
+          onItemClick={(item) => navigate(`/platforms/${item.id}`)}
         />
+
         <CompanyRecentSection
           title="Contacts"
           items={contacts}
           total={company.contactsCount ?? 0}
           type="contact"
           showMorePath={`/companies/${id}/contacts`}
-          onItemClick={(item) => navigate(`/companies/${id}/contacts/${item.id}`)}
+          onItemClick={(item) => navigate(`/contacts/${item.id}`)}
         />
+
         <CompanyRecentSection
           title="Reports"
           items={reports}
@@ -147,6 +141,7 @@ export default function CompanyProfile() {
           showMorePath={`/companies/${id}/reports`}
           onItemClick={(item) => navigate(`/reports/${item.id}`)}
         />
+
       </div>
 
       <CompanyEditDrawer
@@ -161,10 +156,10 @@ export default function CompanyProfile() {
         title="Delete company"
         message={
           deleteError ||
-          `Are you sure you want to delete "${company.name}"? This will also remove all associated investigations, contacts and reports. This action cannot be undone.`
+          `Are you sure you want to delete "${company.name}"? This will also remove all associated platforms, contacts and reports. This action cannot be undone.`
         }
         confirmLabel="Delete"
-        isDanger={true}
+        isDanger
         loading={deleteLoading}
         onConfirm={handleDelete}
         onCancel={() => setDeleteOpen(false)}

@@ -11,7 +11,6 @@ const PAGE_TITLES = {
 
 const DYNAMIC_TITLES = [
   { pattern: '/companies/:id/contacts',      title: 'Contacts' },
-  { pattern: '/companies/:id/investigations', title: 'Investigations' },
   { pattern: '/companies/:id/reports',       title: 'Reports' },
   { pattern: '/companies/:id',               title: 'Company Profile' },
   { pattern: '/investigations/:id/lab',      title: 'Investigation Lab' },
@@ -26,7 +25,12 @@ const DYNAMIC_TITLES = [
   { pattern: '/profile', title: 'My Profile' },
   { pattern: '/users/:sub', title: 'User Details' },
   { pattern: '/admin/jobs', title: 'Admin Jobs' },
-
+  { pattern: '/companies/:id/platforms',          title: 'Platforms' },
+  { pattern: '/companies/:id/platforms/new',      title: 'New Platform' },
+  { pattern: '/platforms/:id/investigations',     title: 'Investigations' },
+  { pattern: '/platforms/:id/investigations/new', title: 'New Investigation' },
+  { pattern: '/platforms/:id/reports',            title: 'Reports' },
+  { pattern: '/platforms/:id',                    title: 'Platform' },
 
 ]
 

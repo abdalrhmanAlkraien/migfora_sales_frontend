@@ -217,7 +217,7 @@ export default function InvestigationDetail() {
       <GenerateReportModal
         open={reportModalOpen}
         investigationId={id}
-        companyId={inv?.companyId}
+        platformId={inv?.platformId}
         onClose={() => setReportModalOpen(false)}
         onComplete={() => setReportModalOpen(false)}
       />

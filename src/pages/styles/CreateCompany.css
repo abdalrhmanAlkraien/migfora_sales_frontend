@@ -116,3 +116,40 @@
   .create-company__row { grid-template-columns: 1fr; gap: 0; }
   .create-company__card { padding: 20px; }
 }
+
+.create-company__section-title--platforms {
+  display: flex; align-items: center; gap: 6px;
+}
+.create-company__platforms {
+  display: flex; flex-direction: column; gap: 16px; margin-bottom: 16px;
+}
+.create-company__platform-row {
+  background: var(--color-off-white); border: 1px solid rgba(13,27,42,.1);
+  border-radius: 10px; padding: 16px;
+}
+.create-company__platform-header {
+  display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;
+}
+.create-company__platform-num {
+  font-family: var(--font-body); font-size: .78rem; font-weight: 600;
+  letter-spacing: .06em; text-transform: uppercase; color: rgba(13,27,42,.45);
+}
+.create-company__platform-remove {
+  width: 28px; height: 28px; border-radius: 6px; border: none;
+  background: rgba(220,38,38,.07); color: #dc2626; cursor: pointer;
+  display: flex; align-items: center; justify-content: center; transition: background .12s;
+}
+.create-company__platform-remove svg { width: 13px; height: 13px; }
+.create-company__platform-remove:hover { background: rgba(220,38,38,.14); }
+.create-company__add-platform {
+  display: flex; align-items: center; gap: 8px;
+  font-family: var(--font-body); font-size: .83rem; font-weight: 500;
+  color: rgba(13,27,42,.5); background: none;
+  border: 1px dashed rgba(13,27,42,.2); border-radius: 8px;
+  padding: 10px 16px; cursor: pointer; transition: all .15s; width: 100%;
+  justify-content: center;
+}
+.create-company__add-platform svg { width: 14px; height: 14px; }
+.create-company__add-platform:hover {
+  border-color: var(--color-orange); color: var(--color-navy);
+}

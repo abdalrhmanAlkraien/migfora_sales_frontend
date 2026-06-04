@@ -35,7 +35,7 @@ const STATUS_MAP = {
   FAILED:     { label: 'Failed',      cls: 'failed' },
 }
 
-export default function GenerateReportModal({ open, investigationId, companyId, onClose, onComplete }) {
+export default function GenerateReportModal({ open, investigationId, companyId, platformId, onClose, onComplete }) {
   const [selectedType, setSelectedType] = useState('TECHNICAL_OVERVIEW')
   const [phase,        setPhase]        = useState('select') // select | generating | done | failed
   const [reportId,     setReportId]     = useState(null)
@@ -96,15 +96,18 @@ export default function GenerateReportModal({ open, investigationId, companyId, 
     setError('')
     try {
       const { data } = await createReportApi({
-        companyId:     Number(companyId),
+        platformId:     Number(platformId),
         investigationId: Number(investigationId),
         type:          selectedType,
       })
       setReportId(data.id)
       setPhase('generating')
       pollReport(data.id)
-    } catch (err) {
-      setError(err?.response?.data?.message || 'Failed to start report generation.')
+    }catch (err) {
+      console.log('full error:', err)
+      console.log('response:', err?.response)
+      console.log('response data:', err?.response?.data)
+      setError(err?.response?.data?.message || err?.message || 'Failed to start report generation.')
       setPhase('failed')
     } finally {
       setLoading(false)

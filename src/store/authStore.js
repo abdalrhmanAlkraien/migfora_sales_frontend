@@ -20,11 +20,13 @@ const useAuthStore = create((set) => ({
   // ── actions ────────────────────────────────────────────────────────────────
 
   /** Called after a successful login or refresh */
-  setAuth: (accessToken, refreshToken, idToken, user) => {
+  setAuth: (accessToken, refreshToken, idToken, user, expiresIn = 3600) => {
+    const expiry = Date.now() + expiresIn * 1000
     localStorage.setItem(LS_ACCESS_TOKEN,  accessToken)
     localStorage.setItem(LS_REFRESH_TOKEN, refreshToken)
     localStorage.setItem(LS_ID_TOKEN,      idToken)
     localStorage.setItem(LS_USER,          JSON.stringify(user))
+    localStorage.setItem('migfora_token_expiry', String(expiry))
     set({
       token: accessToken,
       refreshToken,

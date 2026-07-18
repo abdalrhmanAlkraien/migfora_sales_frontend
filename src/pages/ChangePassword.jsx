@@ -44,12 +44,13 @@ export default function ChangePassword() {
         newPassword,
         challengeSession
       )
-      setAuth(
-        data[appConfig.auth.accessTokenKey],
-        data[appConfig.auth.refreshTokenKey],
-        data[appConfig.auth.idTokenKey],
-        data[appConfig.auth.userKey]
-      )
+    setAuth(
+      data[appConfig.auth.accessTokenKey],
+      data[appConfig.auth.refreshTokenKey],
+      data[appConfig.auth.idTokenKey],
+      data[appConfig.auth.userKey],
+      data.expiresIn ?? 3600      // ← add this
+    )
       navigate('/dashboard', { replace: true })
     } catch (err) {
       setError(

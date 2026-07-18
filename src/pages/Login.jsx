@@ -25,7 +25,8 @@ export default function Login() {
         data[appConfig.auth.accessTokenKey],
         data[appConfig.auth.refreshTokenKey],
         data[appConfig.auth.idTokenKey],
-        data[appConfig.auth.userKey]
+        data[appConfig.auth.userKey],
+        data.expiresIn ?? 3600      // ← add this
       )
       navigate('/dashboard')
 

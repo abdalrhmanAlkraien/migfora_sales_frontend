@@ -38,16 +38,16 @@ const INITIAL_FORM = {
   leadSource: 'LINKEDIN_SEARCH', notes: '',
 }
 
-const LEAD_SOURCE_OPTIONS = [
-  { value: 'LINKEDIN_SEARCH',  label: 'LinkedIn Search' },
-  { value: 'LINKEDIN_CONTENT', label: 'LinkedIn Content' },
-  { value: 'PERSONAL_NETWORK', label: 'Personal Network' },
-  { value: 'REFERRAL',         label: 'Referral' },
-  { value: 'COLD_EMAIL',       label: 'Cold Email' },
-  { value: 'EVENT_CONFERENCE', label: 'Event / Conference' },
-  { value: 'INBOUND_WEBSITE',  label: 'Inbound Website' },
-  { value: 'OTHER',            label: 'Other' },
-]
+  const LEAD_SOURCE_OPTIONS = [
+    { value: 'LINKEDIN_SEARCH',  label: 'LinkedIn Search' },
+    { value: 'LINKEDIN_CONTENT', label: 'LinkedIn Content' },
+    { value: 'PERSONAL_NETWORK', label: 'Personal Network' },
+    { value: 'REFERRAL',         label: 'Referral' },
+    { value: 'COLD_EMAIL',       label: 'Cold Email' },
+    { value: 'EVENT_CONFERENCE', label: 'Event / Conference' },
+    { value: 'INBOUND_WEBSITE',  label: 'Inbound Website' },
+    { value: 'OTHER',            label: 'Other' },
+  ]
 
 export default function CreateCompany() {
   const navigate = useNavigate()

@@ -185,21 +185,46 @@ export default function ContactDetail() {
         <div className="contact-detail__left">
 
           {/* Contact Info */}
-          <div className="contact-detail__card">
-            <h2 className="contact-detail__card-title">Contact Info</h2>
-            <div className="contact-detail__fields">
-              {[
-                { label: 'Email',    value: contact.email },
-                { label: 'Phone',    value: contact.phone },
-                { label: 'LinkedIn', value: contact.linkedIn },
-              ].map((f) => f.value && (
-                <div key={f.label} className="contact-detail__field-row">
-                  <span className="contact-detail__field-label">{f.label}</span>
-                  <span className="contact-detail__field-value">{f.value}</span>
-                </div>
-              ))}
+{/* Contact Info */}
+      <div className="contact-detail__card">
+        <h2 className="contact-detail__card-title">Contact Info</h2>
+        <div className="contact-detail__fields">
+          {contact.email && (
+            <div className="contact-detail__field-row">
+              <span className="contact-detail__field-label">Email</span>
+              <a href={`mailto:${contact.email}`} className="contact-detail__field-link">
+                {contact.email}
+              </a>
             </div>
-          </div>
+          )}
+          {contact.phone && (
+            <div className="contact-detail__field-row">
+              <span className="contact-detail__field-label">Phone</span>
+              <a href={`tel:${contact.phone}`} className="contact-detail__field-link">
+                {contact.phone}
+              </a>
+            </div>
+          )}
+          {contact.linkedIn && (
+            <div className="contact-detail__field-row">
+              <span className="contact-detail__field-label">LinkedIn</span>
+              
+                <a href={contact.linkedIn}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="contact-detail__field-linkedin"
+              >
+                <svg viewBox="0 0 14 14" fill="none" width="14" height="14">
+                  <rect x="1" y="1" width="12" height="12" rx="2.5" fill="#0a66c2"/>
+                  <path d="M3.5 5.5v5M3.5 3.5v.01M6.5 10.5V7.5c0-1 .8-1.5 1.5-1.5s1.5.5 1.5 1.5v3M6.5 5.5v5"
+                    stroke="white" strokeWidth="1.1" strokeLinecap="round"/>
+                </svg>
+                View LinkedIn Profile
+              </a>
+            </div>
+          )}
+        </div>
+      </div>
 
           {/* Follow-up Stats */}
           <div className="contact-detail__card">

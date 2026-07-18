@@ -104,3 +104,19 @@
   color: var(--color-orange);
   font-weight: 600;
 }
+
+.contact-detail__field-link {
+  font-family: var(--font-body); font-size: .875rem;
+  color: var(--color-orange); text-decoration: none;
+  transition: opacity .15s;
+}
+.contact-detail__field-link:hover { opacity: .75; }
+
+.contact-detail__field-linkedin {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-family: var(--font-body); font-size: .82rem; font-weight: 500;
+  color: #0a66c2; text-decoration: none;
+  background: rgba(10,102,194,.08); border: 1px solid rgba(10,102,194,.2);
+  padding: 4px 10px; border-radius: 20px; transition: background .15s;
+}
+.contact-detail__field-linkedin:hover { background: rgba(10,102,194,.14); }

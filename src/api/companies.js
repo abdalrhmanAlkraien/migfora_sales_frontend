@@ -26,3 +26,16 @@ export const getCompanyInvestigationsApi = (id, params) =>
 
 export const getPlatformInvestigationsApi = (id, params) =>
   axiosInstance.get(`/companies/${id}/investigations/platform`, { params })
+
+
+export const getCompanyNotesApi = (companyId, params) =>
+  axiosInstance.get(`/companies/${companyId}/notes`, { params })
+
+export const createCompanyNotesBulkApi = (companyId, notes) =>
+  axiosInstance.post(`/companies/${companyId}/notes/bulk`, notes)
+
+export const updateNoteApi = (noteId, content) =>
+  axiosInstance.patch(`/notes/${noteId}`, { content })
+
+export const deleteNoteApi = (noteId) =>
+  axiosInstance.delete(`/notes/${noteId}`)

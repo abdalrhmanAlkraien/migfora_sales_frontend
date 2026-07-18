@@ -35,7 +35,7 @@ const EMPTY_PLATFORM = { type: 'WEBSITE', name: '', url: '', domain: '' }
 const INITIAL_FORM = {
   name: '', domain: '', website: '', linkedinUrl: '', industry: '',
   country: '', city: '', size: '', status: 'PROSPECT',
-  leadSource: 'LINKEDIN_SEARCH', notes: '',
+  leadSource: 'LINKEDIN_SEARCH',
 }
 
   const LEAD_SOURCE_OPTIONS = [
@@ -57,6 +57,12 @@ export default function CreateCompany() {
   const [errors,    setErrors]    = useState({})
   const [apiError,  setApiError]  = useState('')
   const [loading,   setLoading]   = useState(false)
+  const [notes, setNotes] = useState([])
+
+  const addNote = () => setNotes((p) => [...p, ''])
+  const removeNote = (i) => setNotes((p) => p.filter((_, idx) => idx !== i))
+  const setNote = (i, val) => setNotes((p) => p.map((n, idx) => idx === i ? val : n))
+
 
   const set = (field) => (e) => {
     setForm((p) => ({ ...p, [field]: e.target.value }))
@@ -105,6 +111,7 @@ export default function CreateCompany() {
         platforms: platforms.map((pl) =>
           Object.fromEntries(Object.entries(pl).filter(([_, v]) => v !== ''))
         ),
+        notes: notes.filter((n) => n.trim() !== ''),
       }
       const { data } = await createCompanyApi(payload)
       navigate(`/companies/${data.id}`)
@@ -213,11 +220,42 @@ export default function CreateCompany() {
             </div>
           </div>
 
-          <div className="create-company__section-title" style={{ marginTop: 8 }}>Notes</div>
-          <div className="create-company__field">
-            <textarea className="create-company__input create-company__textarea"
-              value={form.notes} onChange={set('notes')} rows={3}
-              placeholder="Add internal notes about this company…"/>
+          {/* Notes section */}
+          <div className="create-company__section-title" style={{ marginTop: 8 }}>
+            Notes
+            <span style={{ fontWeight: 400, textTransform: 'none', letterSpacing: 0, marginLeft: 8, fontSize: '.75rem', color: 'rgba(13,27,42,.35)' }}>
+              — optional
+            </span>
+          </div>
+
+          <div className="create-company__notes">
+            {notes.map((note, i) => (
+              <div key={i} className="create-company__note-row">
+                <textarea
+                  className="create-company__input create-company__textarea"
+                  value={note}
+                  onChange={(e) => setNote(i, e.target.value)}
+                  rows={2}
+                  placeholder={`Note ${i + 1}…`}
+                />
+                <button
+                  type="button"
+                  className="create-company__note-remove"
+                  onClick={() => removeNote(i)}
+                >
+                  <svg viewBox="0 0 14 14" fill="none">
+                    <path d="M2 3.5h10M5 3.5V2.5h4v1M5.5 6v4M8.5 6v4M3 3.5l.75 8h6.5L11 3.5"
+                      stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/>
+                  </svg>
+                </button>
+              </div>
+            ))}
+            <button type="button" className="create-company__add-platform" onClick={addNote}>
+              <svg viewBox="0 0 16 16" fill="none">
+                <path d="M8 2v12M2 8h12" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+              </svg>
+              Add note
+            </button>
           </div>
 
           {/* ── Platforms ── */}

@@ -14,6 +14,8 @@ import CompanyRecentSection from '../components/company/CompanyRecentSection'
 import CompanyEditDrawer    from '../components/company/CompanyEditDrawer'
 import ConfirmDialog        from '../components/common/ConfirmDialog'
 import './styles/CompanyProfile.css'
+import SectionDivider from '../components/common/SectionDivider'
+import CompanyNotes from '../components/company/CompanyNotes'
 
 export default function CompanyProfile() {
   const { id }   = useParams()
@@ -112,6 +114,8 @@ export default function CompanyProfile() {
         reports={company.reportsCount ?? 0}
       />
 
+      <SectionDivider label="Notes" />
+      <CompanyNotes companyId={id} />
       <div className="company-profile__sections">
 
         {/* Platforms — replaces investigations */}

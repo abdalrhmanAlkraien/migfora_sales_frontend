@@ -4,6 +4,7 @@ import { changePasswordApi } from '../api/auth'
 import useAuthStore from '../store/authStore'
 import appConfig from '../config/appConfig'
 import './styles/ChangePassword.css'
+import PasswordInput from '../components/common/PasswordInput'
 
 const PASSWORD_RULES = [
   { label: 'At least 8 characters',     test: (v) => v.length >= 8 },
@@ -128,20 +129,16 @@ export default function ChangePassword() {
             <label className="cp-field__label" htmlFor="confirm-password">
               Confirm password
             </label>
-            <input
+            <PasswordInput
               id="confirm-password"
-              type="password"
               className={`cp-field__input ${
                 confirmPassword.length > 0
-                  ? passwordsMatch
-                    ? 'cp-field__input--match'
-                    : 'cp-field__input--mismatch'
+                  ? passwordsMatch ? 'cp-field__input--match' : 'cp-field__input--mismatch'
                   : ''
               }`}
               placeholder="••••••••"
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
-              required
               autoComplete="new-password"
             />
             {confirmPassword.length > 0 && !passwordsMatch && (

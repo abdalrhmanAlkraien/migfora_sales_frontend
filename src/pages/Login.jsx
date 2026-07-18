@@ -4,6 +4,7 @@ import appConfig from '../config/appConfig'
 import useAuthStore from '../store/authStore'
 import { loginApi } from '../api/auth'
 import './styles/Login.css'
+import PasswordInput from '../components/common/PasswordInput'
 
 export default function Login() {
   const navigate = useNavigate()
@@ -87,13 +88,11 @@ export default function Login() {
 
         <div className="form-group">
           <label className="form-label">Password</label>
-          <input
+          <PasswordInput
             className="form-input"
-            type="password"
             placeholder="Enter your password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            required
           />
         </div>
 

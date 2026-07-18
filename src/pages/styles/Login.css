@@ -124,3 +124,12 @@ body:has(.login-card) {
 }
 
 .login-card__footer span:hover { color: var(--color-orange-2); }
+
+.login-card__forgot-row {
+  display: flex; justify-content: flex-end; margin-top: 6px;
+}
+.login-card__forgot-link {
+  font-family: var(--font-body); font-size: .8rem;
+  color: var(--color-orange); cursor: pointer; transition: opacity .15s;
+}
+.login-card__forgot-link:hover { opacity: .75; }

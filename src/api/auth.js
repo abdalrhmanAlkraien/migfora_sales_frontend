@@ -90,3 +90,9 @@ export const registerApi = (data) => {
 export const logoutApi = () => {
   return axiosInstance.post('/auth/logout')
 }
+
+export const forgotPasswordApi = (email) =>
+  axiosInstance.post('/auth/forgot-password', { email })
+
+export const confirmForgotPasswordApi = (email, code, newPassword) =>
+  axiosInstance.post('/auth/confirm-forgot-password', { email, code, newPassword })

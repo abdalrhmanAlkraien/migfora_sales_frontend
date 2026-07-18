@@ -6,9 +6,9 @@ const axiosInstance = axios.create({
 })
 
 // ── Token helpers ─────────────────────────────────────────────────────────────
-const getAccessToken   = () => localStorage.getItem('migfora_access_token')
-const getRefreshToken  = () => localStorage.getItem('migfora_refresh_token')
-const getTokenExpiry   = () => Number(localStorage.getItem('migfora_token_expiry') || 0)
+const getAccessToken  = () => localStorage.getItem('migfora_access_token')
+const getRefreshToken = () => localStorage.getItem('migfora_refresh_token')
+const getTokenExpiry  = () => Number(localStorage.getItem('migfora_token_expiry') || 0)
 
 const clearAuth = () => {
   localStorage.removeItem('migfora_access_token')
@@ -17,6 +17,8 @@ const clearAuth = () => {
   localStorage.removeItem('migfora_token_expiry')
   localStorage.removeItem('migfora_user')
 }
+
+const isAuthEndpoint = (url) => url?.includes('/auth/')
 
 const isTokenExpiringSoon = () => {
   const expiry = getTokenExpiry()
@@ -47,8 +49,7 @@ const doRefresh = async () => {
   const newAccessToken  = data.accessToken
   const newRefreshToken = data.refreshToken ?? refreshToken
   const newIdToken      = data.idToken
-  // expiresIn is in seconds (e.g. 3600) — store as absolute timestamp
-  const expiry = Date.now() + (data.expiresIn ?? 3600) * 1000
+  const expiry          = Date.now() + (data.expiresIn ?? 3600) * 1000
 
   localStorage.setItem('migfora_access_token',  newAccessToken)
   localStorage.setItem('migfora_refresh_token', newRefreshToken)
@@ -67,14 +68,13 @@ const doRefresh = async () => {
 // ── Request interceptor — proactive refresh before every call ─────────────────
 axiosInstance.interceptors.request.use(
   async (config) => {
-    // skip refresh for the refresh endpoint itself
-    if (config.url?.includes('/auth/refresh')) {
+    // skip all auth endpoints
+    if (isAuthEndpoint(config.url)) {
       return config
     }
 
     if (isTokenExpiringSoon()) {
       if (isRefreshing) {
-        // wait for the in-flight refresh to complete
         const token = await new Promise((resolve, reject) => {
           failedQueue.push({ resolve, reject })
         })
@@ -110,9 +110,14 @@ axiosInstance.interceptors.response.use(
   (response) => response,
   async (error) => {
     const originalRequest = error.config
+    const status          = error.response?.status
 
-    const status = error.response?.status
-    if ((status === 401 || status === 403) && !originalRequest._retry) {
+    // skip auth endpoints — let Login/ChangePassword handle their own errors
+    if (
+      (status === 401 || status === 403) &&
+      !originalRequest._retry &&
+      !isAuthEndpoint(originalRequest.url)
+    ) {
       originalRequest._retry = true
 
       if (!getRefreshToken()) {

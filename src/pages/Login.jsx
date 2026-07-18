@@ -97,6 +97,15 @@ export default function Login() {
           />
         </div>
 
+        <div className="login-card__forgot-row">
+          <span
+            className="login-card__forgot-link"
+            onClick={() => navigate('/forgot-password')}
+          >
+            Forgot password?
+          </span>
+        </div>
+
         {error && <div className="form-error">{error}</div>}
 
         <button className="form-btn" type="submit" disabled={loading}>

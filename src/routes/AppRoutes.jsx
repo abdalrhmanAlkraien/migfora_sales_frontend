@@ -27,6 +27,7 @@ import CreatePlatform from '../pages/CreatePlatform'
 import PlatformDetail from '../pages/PlatformDetail'
 import PlatformInvestigations from '../pages/PlatformInvestigations'
 import PlatformReports from '../pages/PlatformReports'
+import ForgotPassword from '../pages/ForgotPassword'
 
 
 export default function AppRoutes() {
@@ -141,6 +142,10 @@ export default function AppRoutes() {
 
         <Route path="/admin/jobs" element={
           <ProtectedRoute adminOnly><AppLayout><AdminJobs /></AppLayout></ProtectedRoute>
+        }/>
+
+        <Route path="/forgot-password" element={
+          <AuthLayout><ForgotPassword /></AuthLayout>
         }/>
         {/* Fallback */}
         <Route path="*" element={<Navigate to="/dashboard" replace />} />

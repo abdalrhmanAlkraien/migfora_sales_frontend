@@ -41,8 +41,23 @@ export default function InvestigationLab() {
           getInvestigationApi(id),
           getTasksLookupApi(),
         ])
-        setInv(invRes.data)
-        setTasks(lookupRes.data)
+        const invData = invRes.data
+        setInv(invData)
+
+        // merge lookup tasks with actual run status from inv.tasks
+        const runMap = (invData.tasks || []).reduce((acc, t) => {
+          acc[t.type] = t
+          return acc
+        }, {})
+
+        const merged = lookupRes.data.map((task) => ({
+          ...task,
+          runStatus:   runMap[task.type]?.status   || null,
+          completedAt: runMap[task.type]?.completedAt || null,
+          taskId:      runMap[task.type]?.id        || null,
+        }))
+
+        setTasks(merged)
       } catch {
         setError('Failed to load lab. Please try again.')
       } finally {
@@ -55,7 +70,6 @@ export default function InvestigationLab() {
 
   if (loading) return <div className="lab__loading">Loading lab…</div>
   if (error)   return <div className="lab__error">{error}</div>
-
   return (
     <div className="lab">
 
@@ -89,6 +103,7 @@ export default function InvestigationLab() {
       {/* ── Section 1: Investigation Context ── */}
       <InvestigationContext
         context={context}
+        tasks={inv?.tasks || []}
         loading={contextLoading}
         onRefresh={fetchContext}
       />

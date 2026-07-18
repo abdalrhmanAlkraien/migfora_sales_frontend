@@ -8,14 +8,61 @@ const PERFORMANCE_RATING = {
   POOR:      { label: 'Poor',      cls: 'poor' },
 }
 
-function ContextSection({ title, icon, children }) {
+// Map each section title to its task type
+const SECTION_TASK_MAP = {
+  'DNS':            'DNS_LOOKUP',
+  'WHOIS':          'WHOIS',
+  'Headers':        'HEADERS',
+  'Performance':    'PERFORMANCE',
+  'SSL Certificate':'SSL_CERT',
+  'Tech Stack':     'TECH_STACK',
+  'Subdomains':     'SUBDOMAINS',
+  'IP Info':        'IP_INFO',
+  'Shodan':         'SHODAN',
+  'DNS History':    'DNS_HISTORY',
+  'Direct IP Scan': 'DIRECT_IP_SCAN',
+  'Subdomain Scan': 'SUBDOMAIN_SCAN',
+}
+
+// Update ContextSection to accept taskStatus prop
+function ContextSection({ title, icon, children, taskStatus }) {
   const [open, setOpen] = useState(false)
+
+  const statusIndicator = () => {
+    if (taskStatus === 'COMPLETED') return (
+      <span className="ctx-section__status ctx-section__status--completed">
+        <svg viewBox="0 0 12 12" fill="none">
+          <circle cx="6" cy="6" r="5.5" fill="rgba(16,185,129,.12)" stroke="#10b981" strokeWidth="1"/>
+          <path d="M3 6l2.5 2.5L9 4" stroke="#10b981" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round"/>
+        </svg>
+      </span>
+    )
+    if (taskStatus === 'FAILED') return (
+      <span className="ctx-section__status ctx-section__status--failed">
+        <svg viewBox="0 0 12 12" fill="none">
+          <circle cx="6" cy="6" r="5.5" fill="rgba(220,38,38,.1)" stroke="#dc2626" strokeWidth="1"/>
+          <path d="M4 4l4 4M8 4l-4 4" stroke="#dc2626" strokeWidth="1.3" strokeLinecap="round"/>
+        </svg>
+      </span>
+    )
+    if (taskStatus === 'RUNNING') return (
+      <span className="ctx-section__status ctx-section__status--running">
+        <svg viewBox="0 0 12 12" fill="none">
+          <circle cx="6" cy="6" r="5.5" fill="rgba(255,153,0,.1)" stroke="#FF9900" strokeWidth="1"/>
+          <path d="M6 3v3l2 1" stroke="#FF9900" strokeWidth="1.3" strokeLinecap="round"/>
+        </svg>
+      </span>
+    )
+    return null
+  }
+
   return (
     <div className="ctx-section">
       <button className="ctx-section__trigger" onClick={() => setOpen((p) => !p)}>
         <div className="ctx-section__trigger-left">
           <span className="ctx-section__icon">{icon}</span>
           <span className="ctx-section__title">{title}</span>
+          {statusIndicator()}
         </div>
         <svg viewBox="0 0 12 12" fill="none" className="ctx-section__chevron"
           style={{ transform: open ? 'rotate(180deg)' : 'none', transition: 'transform .2s' }}>
@@ -538,7 +585,18 @@ function SubdomainScanSection({ subdomainScan }) {
   )
 }
 
-export default function InvestigationContext({ context, loading, onRefresh }) {
+export default function InvestigationContext({ context, tasks = [], loading, onRefresh }) {
+
+  const taskStatusMap = tasks.reduce((acc, t) => {
+    acc[t.type] = t.status
+    return acc
+  }, {})
+
+  const getTaskStatus = (sectionTitle) => {
+    const taskType = SECTION_TASK_MAP[sectionTitle]
+    return taskType ? taskStatusMap[taskType] : undefined
+  }
+
   if (loading) {
     return (
       <div className="inv-ctx inv-ctx--loading">
@@ -551,7 +609,6 @@ export default function InvestigationContext({ context, loading, onRefresh }) {
   const hasData = context && Object.entries(context)
     .filter(([k]) => !['investigationId', 'updatedAt'].includes(k))
     .some(([_, v]) => v !== null)
-    
 
   return (
     <div className="inv-ctx">
@@ -583,18 +640,18 @@ export default function InvestigationContext({ context, loading, onRefresh }) {
         </div>
       ) : (
         <div className="inv-ctx__sections">
-          {context.dns        && <DnsSection        dns={context.dns} nsLookup={context.nsLookup} />}
-          {context.whois      && <WhoisSection      whois={context.whois} />}
-          {context.headers    && <HeadersSection    headers={context.headers} />}
-          {context.performance && <PerformanceSection perf={context.performance} />}
-          {context.ssl        && <SslSection        ssl={context.ssl} />}
-          {context.techStack  && <TechStackSection  tech={context.techStack} />}
-          {context.subdomains && <SubdomainsSection sub={context.subdomains} />}
-          {context.ipInfo     && <IpInfoSection     ipInfo={context.ipInfo} />}
-          {context.shodan     && <ShodanSection     shodan={context.shodan} />}
-          {context.dnsHistory    && <DnsHistorySection    dnsHistory={context.dnsHistory} />}
-          {context.directScan    && <DirectScanSection    directScan={context.directScan} />}
-          {context.subdomainScan && <SubdomainScanSection subdomainScan={context.subdomainScan} />}
+          {context.dns         && <DnsSection         dns={context.dns} nsLookup={context.nsLookup} taskStatus={getTaskStatus('DNS')} />}
+          {context.whois       && <WhoisSection        whois={context.whois}             taskStatus={getTaskStatus('WHOIS')} />}
+          {context.headers     && <HeadersSection      headers={context.headers}          taskStatus={getTaskStatus('Headers')} />}
+          {context.performance && <PerformanceSection  perf={context.performance}         taskStatus={getTaskStatus('Performance')} />}
+          {context.ssl         && <SslSection          ssl={context.ssl}                  taskStatus={getTaskStatus('SSL Certificate')} />}
+          {context.techStack   && <TechStackSection    tech={context.techStack}            taskStatus={getTaskStatus('Tech Stack')} />}
+          {context.subdomains  && <SubdomainsSection   sub={context.subdomains}            taskStatus={getTaskStatus('Subdomains')} />}
+          {context.ipInfo      && <IpInfoSection       ipInfo={context.ipInfo}             taskStatus={getTaskStatus('IP Info')} />}
+          {context.shodan      && <ShodanSection       shodan={context.shodan}             taskStatus={getTaskStatus('Shodan')} />}
+          {context.dnsHistory    && <DnsHistorySection    dnsHistory={context.dnsHistory}       taskStatus={getTaskStatus('DNS History')} />}
+          {context.directScan    && <DirectScanSection    directScan={context.directScan}       taskStatus={getTaskStatus('Direct IP Scan')} />}
+          {context.subdomainScan && <SubdomainScanSection subdomainScan={context.subdomainScan} taskStatus={getTaskStatus('Subdomain Scan')} />}
         </div>
       )}
     </div>

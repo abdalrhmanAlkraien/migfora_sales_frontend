@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { checkTaskApi, runTasksApi, getTaskResultApi } from '../../api/investigations'
 import './styles/TaskCard.css'
 
@@ -11,35 +11,19 @@ const STATUS_MAP = {
   BLOCKED:   { label: 'Blocked',   cls: 'blocked' },
 }
 
-function renderValue(v) {
-  if (v === null || v === undefined) return '—'
-  if (Array.isArray(v)) return v.join(', ')
-  if (typeof v === 'object') {
-    return Object.entries(v)
-      .map(([hk, hv]) => `${hk}: ${hv}`)
-      .join('\n')
-  }
-  return String(v)
-}
-
 function ResultBlock({ result }) {
   if (typeof result === 'string') {
     return <pre className="task-card__result-pre">{result}</pre>
   }
-
   if (typeof result === 'object' && result !== null) {
     const flat = Object.entries(result).filter(([_, v]) =>
-      v === null ||
-      typeof v === 'number' ||
-      typeof v === 'boolean' ||
-      typeof v === 'string' ||
+      v === null || typeof v === 'number' || typeof v === 'boolean' || typeof v === 'string' ||
       (Array.isArray(v) && v.every((item) => typeof item !== 'object'))
     )
     const nested = Object.entries(result).filter(([_, v]) =>
       (typeof v === 'object' && v !== null && !Array.isArray(v)) ||
       (Array.isArray(v) && v.some((item) => typeof item === 'object'))
     )
-
     return (
       <div className="task-card__result-kv">
         {flat.map(([k, v]) => (
@@ -48,31 +32,24 @@ function ResultBlock({ result }) {
             <span className="task-card__result-val">
               {Array.isArray(v) ? (
                 <div className="task-card__result-list">
-                  {v.map((item, i) => (
-                    <span key={i} className="task-card__result-tag">{String(item)}</span>
-                  ))}
+                  {v.map((item, i) => <span key={i} className="task-card__result-tag">{String(item)}</span>)}
                 </div>
               ) : v === null ? '—' : String(v)}
             </span>
           </div>
         ))}
-        {nested.map(([k, v]) => (
-          <NestedBlock key={k} label={k} data={v} />
-        ))}
+        {nested.map(([k, v]) => <NestedBlock key={k} label={k} data={v} />)}
       </div>
     )
   }
-
   return null
 }
 
 function NestedBlock({ label, data }) {
   const [open, setOpen] = useState(false)
-
   const entries = Array.isArray(data)
     ? data.map((item, i) => [String(i + 1), item])
     : Object.entries(data)
-
   return (
     <div className="task-card__nested">
       <button className="task-card__nested-trigger" onClick={() => setOpen((p) => !p)}>
@@ -105,15 +82,29 @@ function NestedBlock({ label, data }) {
 }
 
 export default function TaskCard({ task, investigationId, mode, onComplete }) {
-  const [status,      setStatus]      = useState('IDLE')
+  const initialStatus = task.runStatus || 'IDLE'
+  const [status,      setStatus]      = useState(initialStatus)
   const [expanded,    setExpanded]    = useState(false)
   const [result,      setResult]      = useState(null)
   const [checkResult, setCheckResult] = useState(null)
   const [checking,    setChecking]    = useState(false)
   const [checkError,  setCheckError]  = useState('')
-  const [taskId,      setTaskId]      = useState(null)
+  const [taskId,      setTaskId]      = useState(task.taskId || null)
 
   const s = STATUS_MAP[status] || STATUS_MAP.IDLE
+
+  // fetch result on mount for previously completed tasks
+  useEffect(() => {
+    if (task.runStatus === 'COMPLETED' && task.taskId) {
+      getTaskResultApi(investigationId, task.taskId).then(({ data }) => {
+        let parsed = data.result
+        if (parsed && typeof parsed === 'string') {
+          try { parsed = JSON.parse(parsed) } catch {}
+        }
+        setResult(parsed || data.rawOutput || null)
+      }).catch(() => {})
+    }
+  }, [])
 
   const handleCheck = async () => {
     setChecking(true)
@@ -132,27 +123,24 @@ export default function TaskCard({ task, investigationId, mode, onComplete }) {
   const pollResult = async (createdTaskId) => {
     const MAX_POLLS = 30
     const INTERVAL  = 3000
-    let   count     = 0
-    let   stopped   = false
-
+    let count   = 0
+    let stopped = false
     const poll = async () => {
       if (stopped) return
       try {
         const { data } = await getTaskResultApi(investigationId, createdTaskId)
-
         if (data.status === 'COMPLETED') {
           stopped = true
           setStatus('COMPLETED')
           let parsed = data.result
           if (parsed && typeof parsed === 'string') {
-            try { parsed = JSON.parse(parsed) } catch { /* keep as string */ }
+            try { parsed = JSON.parse(parsed) } catch {}
           }
           setResult(parsed || data.rawOutput || 'No result data.')
           setExpanded(true)
           if (onComplete) onComplete()
           return
         }
-
         if (data.status === 'FAILED') {
           stopped = true
           setStatus('FAILED')
@@ -161,28 +149,20 @@ export default function TaskCard({ task, investigationId, mode, onComplete }) {
           if (onComplete) onComplete()
           return
         }
-
         if (data.status === 'BLOCKED') {
           stopped = true
           setStatus('BLOCKED')
           setResult(data.errorMessage || 'Task blocked by dependency.')
           return
         }
-
         count++
-        if (count < MAX_POLLS) {
-          setTimeout(poll, INTERVAL)
-        } else {
-          stopped = true
-          setStatus('FAILED')
-          setResult('Task timed out.')
-        }
+        if (count < MAX_POLLS) setTimeout(poll, INTERVAL)
+        else { stopped = true; setStatus('FAILED'); setResult('Task timed out.') }
       } catch {
         count++
         if (!stopped && count < MAX_POLLS) setTimeout(poll, INTERVAL)
       }
     }
-
     setTimeout(poll, INTERVAL)
   }
 
@@ -193,13 +173,11 @@ export default function TaskCard({ task, investigationId, mode, onComplete }) {
     try {
       const { data } = await runTasksApi(investigationId, [task.type])
       const created  = data[0]
-
       if (created.status === 'BLOCKED') {
         setStatus('BLOCKED')
         setResult(created.errorMessage || 'Task blocked by dependency.')
         return
       }
-
       setTaskId(created.id)
       setStatus('RUNNING')
       pollResult(created.id)
@@ -213,9 +191,18 @@ export default function TaskCard({ task, investigationId, mode, onComplete }) {
   const cdnWarning = checkResult?.cdnWarning ?? false
   const reason     = checkResult?.reason ?? ''
 
+  const handleRunAgain = () => {
+    setStatus('IDLE')
+    setCheckResult(null)
+    setResult(null)
+    setExpanded(false)
+    setTaskId(null)
+  }
+
   return (
     <div className={`task-card task-card--${s.cls}`}>
 
+      {/* ── Header — badge only, no buttons ── */}
       <div className="task-card__header">
         <div className="task-card__left">
           <span className={`task-card__dot task-card__dot--${s.cls}`} />
@@ -225,29 +212,15 @@ export default function TaskCard({ task, investigationId, mode, onComplete }) {
           </div>
         </div>
         <div className="task-card__right">
-          {task.externalApi && (
-            <span className="task-card__ext-badge">external</span>
-          )}
-          <span className={`task-card__badge task-card__badge--${s.cls}`}>
-            {s.label}
-          </span>
-          {(status === 'COMPLETED' || status === 'FAILED') && (
-            <button
-              className="task-card__expand"
-              onClick={() => setExpanded((p) => !p)}
-              aria-label={expanded ? 'Collapse' : 'Expand'}
-            >
-              <svg viewBox="0 0 12 12" fill="none"
-                style={{ transform: expanded ? 'rotate(180deg)' : 'none', transition: 'transform .2s' }}>
-                <path d="M2 4l4 4 4-4" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round"/>
-              </svg>
-            </button>
-          )}
+          {task.externalApi && <span className="task-card__ext-badge">external</span>}
+          <span className={`task-card__badge task-card__badge--${s.cls}`}>{s.label}</span>
         </div>
       </div>
 
+      {/* ── Description ── */}
       <p className="task-card__desc">{task.description}</p>
 
+      {/* ── Dependency hint ── */}
       {task.dependsOn && checkResult === null && status === 'IDLE' && (
         <div className="task-card__dep-hint">
           <svg viewBox="0 0 12 12" fill="none" className="task-card__dep-icon">
@@ -258,9 +231,7 @@ export default function TaskCard({ task, investigationId, mode, onComplete }) {
         </div>
       )}
 
-      {checkError && (
-        <div className="task-card__check-error">{checkError}</div>
-      )}
+      {checkError && <div className="task-card__check-error">{checkError}</div>}
 
       {cdnWarning && (
         <div className="task-card__cdn-warning">
@@ -268,10 +239,7 @@ export default function TaskCard({ task, investigationId, mode, onComplete }) {
             <path d="M7 1.5L1.5 11.5h11L7 1.5Z" stroke="currentColor" strokeWidth="1.2" strokeLinejoin="round"/>
             <path d="M7 6v2.5M7 10h.01" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round"/>
           </svg>
-          <span>
-            <strong>{checkResult.cdnProvider}</strong> CDN detected —
-            results may reflect CDN infrastructure, not origin server
-          </span>
+          <span><strong>{checkResult.cdnProvider}</strong> CDN detected — results may reflect CDN infrastructure, not origin server</span>
         </div>
       )}
 
@@ -291,10 +259,7 @@ export default function TaskCard({ task, investigationId, mode, onComplete }) {
             <circle cx="7" cy="7" r="5.5" stroke="currentColor" strokeWidth="1.2"/>
             <path d="M4.5 7l2 2 3-3" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/>
           </svg>
-          {checkResult.resolvedIp
-            ? `Ready — resolved to ${checkResult.resolvedIp}`
-            : 'Ready to run'
-          }
+          {checkResult.resolvedIp ? `Ready — resolved to ${checkResult.resolvedIp}` : 'Ready to run'}
         </div>
       )}
 
@@ -308,52 +273,50 @@ export default function TaskCard({ task, investigationId, mode, onComplete }) {
         </div>
       )}
 
+      {/* ── Result ── */}
+      {expanded && result && (
+        <div className="task-card__result">
+          <ResultBlock result={result} />
+        </div>
+      )}
+
+      {/* ── Actions — always at bottom ── */}
       {mode === 'manual' && (
         <div className="task-card__actions">
+
           {status === 'IDLE' && canRun === null && (
             <button className="task-card__btn task-card__btn--check"
               onClick={handleCheck} disabled={checking}>
-              {checking
-                ? <><span className="task-card__btn-spinner" /> Checking…</>
-                : 'Check & Run'
-              }
+              {checking ? <><span className="task-card__btn-spinner" /> Checking…</> : 'Check & Run'}
             </button>
           )}
+
           {status === 'IDLE' && canRun === true && (
             <button className="task-card__btn task-card__btn--run" onClick={handleRun}>
               Run {task.type}
             </button>
           )}
+
           {status === 'IDLE' && canRun === false && (
             <button className="task-card__btn task-card__btn--recheck"
               onClick={handleCheck} disabled={checking}>
               {checking ? 'Checking…' : 'Re-check'}
             </button>
           )}
+
           {(status === 'PENDING' || status === 'RUNNING') && (
             <div className="task-card__running-indicator">
               <span className="task-card__spinner" />
               {status === 'PENDING' ? 'Queued…' : 'Running…'}
             </div>
           )}
+
           {(status === 'COMPLETED' || status === 'FAILED') && (
-            <button className="task-card__btn task-card__btn--recheck"
-              onClick={() => {
-                setStatus('IDLE')
-                setCheckResult(null)
-                setResult(null)
-                setExpanded(false)
-                setTaskId(null)
-              }}>
+            <button className="task-card__btn task-card__btn--recheck" onClick={handleRunAgain}>
               Run again
             </button>
           )}
-        </div>
-      )}
 
-      {expanded && result && (
-        <div className="task-card__result">
-          <ResultBlock result={result} />
         </div>
       )}
 

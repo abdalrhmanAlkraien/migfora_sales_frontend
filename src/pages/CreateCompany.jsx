@@ -33,9 +33,21 @@ const PLATFORM_TYPES = [
 const EMPTY_PLATFORM = { type: 'WEBSITE', name: '', url: '', domain: '' }
 
 const INITIAL_FORM = {
-  name: '', domain: '', website: '', industry: '',
-  country: '', city: '', size: '', status: 'PROSPECT', notes: '',
+  name: '', domain: '', website: '', linkedinUrl: '', industry: '',
+  country: '', city: '', size: '', status: 'PROSPECT',
+  leadSource: 'LINKEDIN_SEARCH', notes: '',
 }
+
+const LEAD_SOURCE_OPTIONS = [
+  { value: 'LINKEDIN_SEARCH',  label: 'LinkedIn Search' },
+  { value: 'LINKEDIN_CONTENT', label: 'LinkedIn Content' },
+  { value: 'PERSONAL_NETWORK', label: 'Personal Network' },
+  { value: 'REFERRAL',         label: 'Referral' },
+  { value: 'COLD_EMAIL',       label: 'Cold Email' },
+  { value: 'EVENT_CONFERENCE', label: 'Event / Conference' },
+  { value: 'INBOUND_WEBSITE',  label: 'Inbound Website' },
+  { value: 'OTHER',            label: 'Other' },
+]
 
 export default function CreateCompany() {
   const navigate = useNavigate()
@@ -153,6 +165,26 @@ export default function CreateCompany() {
               <input className="create-company__input" value={form.industry} onChange={set('industry')} placeholder="e.g. E-Commerce"/>
             </div>
           </div>
+
+          <div className="create-company__row">
+            <div className="create-company__field">
+              <label className="create-company__label">LinkedIn URL</label>
+              <input
+                className="create-company__input"
+                value={form.linkedinUrl}
+                onChange={set('linkedinUrl')}
+                placeholder="https://linkedin.com/company/soyolah"
+              />
+            </div>
+            <div className="create-company__field">
+              <label className="create-company__label">Lead Source</label>
+              <select className="create-company__input" value={form.leadSource} onChange={set('leadSource')}>
+                {LEAD_SOURCE_OPTIONS.map((o) => (
+                  <option key={o.value} value={o.value}>{o.label}</option>
+                ))}
+              </select>
+            </div>
+          </div>          
 
           <div className="create-company__row">
             <div className="create-company__field">

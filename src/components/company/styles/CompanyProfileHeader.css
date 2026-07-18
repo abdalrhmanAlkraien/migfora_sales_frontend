@@ -87,3 +87,41 @@
   border-color: rgba(220,38,38,.2);
 }
 .cph__action-btn--danger:hover { background: rgba(220,38,38,.06); }
+
+.cph__meta-link {
+  color: inherit;
+  text-decoration: none;
+  transition: color .15s;
+}
+.cph__meta-link:hover {
+  color: var(--color-orange);
+}
+
+
+.cph__badge {
+  display: inline-flex; align-items: center; gap: 5px;
+  font-family: var(--font-body); font-size: .72rem; font-weight: 500;
+  padding: 3px 10px; border-radius: 20px;
+  text-decoration: none;
+}
+
+.cph__badge-icon { width: 11px; height: 11px; flex-shrink: 0; }
+
+.cph__badge--source {
+  background: rgba(255,153,0,.1); color: #b96d00;
+  border: 1px solid rgba(255,153,0,.2);
+}
+
+.cph__badge--linkedin {
+  background: rgba(10,102,194,.08); color: #0a66c2;
+  border: 1px solid rgba(10,102,194,.2);
+  transition: background .15s;
+}
+.cph__badge--linkedin:hover { background: rgba(10,102,194,.14); }
+
+.cph__badges-row {
+  display: flex; align-items: center; gap: 8px;
+  margin-top: 8px;
+  margin-bottom: 8px;  /* ← add this */
+  flex-wrap: wrap;
+}

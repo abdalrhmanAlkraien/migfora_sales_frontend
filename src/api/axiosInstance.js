@@ -50,7 +50,7 @@ axiosInstance.interceptors.response.use(
     const originalRequest = error.config
 
     // Only attempt refresh on 401, and only once per request
-    if (error.response?.status === 401 && !originalRequest._retry) {
+    if ((error.response?.status === 401 || error.response?.status === 403) && !originalRequest._retry) {
       const refreshToken = getRefreshToken()
 
       // No refresh token available — hard logout

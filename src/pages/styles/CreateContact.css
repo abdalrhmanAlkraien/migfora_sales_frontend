@@ -78,3 +78,37 @@
   .create-contact__row { grid-template-columns: 1fr; gap: 0; }
   .create-contact__card { padding: 20px; }
 }
+
+.create-contact__section-title--notes {
+  display: flex; align-items: center; gap: 6px;
+}
+.create-contact__section-optional {
+  font-weight: 400; text-transform: none;
+  letter-spacing: 0; font-size: .75rem; color: rgba(13,27,42,.35);
+}
+.create-contact__notes {
+  display: flex; flex-direction: column; gap: 10px; margin-bottom: 16px;
+}
+.create-contact__note-row {
+  display: flex; gap: 8px; align-items: flex-start;
+}
+.create-contact__note-row .create-contact__textarea {
+  flex: 1; margin-bottom: 0;
+}
+.create-contact__note-remove {
+  width: 32px; height: 32px; border-radius: 8px; border: none; flex-shrink: 0;
+  background: rgba(220,38,38,.07); color: #dc2626; cursor: pointer; margin-top: 2px;
+  display: flex; align-items: center; justify-content: center; transition: background .12s;
+}
+.create-contact__note-remove svg { width: 13px; height: 13px; }
+.create-contact__note-remove:hover { background: rgba(220,38,38,.14); }
+.create-contact__add-note {
+  display: flex; align-items: center; gap: 8px;
+  font-family: var(--font-body); font-size: .83rem; font-weight: 500;
+  color: rgba(13,27,42,.4); background: none;
+  border: 1px dashed rgba(13,27,42,.2); border-radius: 8px;
+  padding: 10px 16px; cursor: pointer; transition: all .15s;
+  width: 100%; justify-content: center;
+}
+.create-contact__add-note svg { width: 14px; height: 14px; }
+.create-contact__add-note:hover { border-color: var(--color-orange); color: var(--color-navy); }

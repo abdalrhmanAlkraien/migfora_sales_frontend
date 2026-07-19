@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { createContactApi } from '../api/contacts'
+import { createContactNotesBulkApi } from '../api/notes'
 import './styles/CreateContact.css'
 
 const STATUS_OPTIONS = [
@@ -17,7 +18,7 @@ const STATUS_OPTIONS = [
 
 const INITIAL = {
   name: '', title: '', email: '', phone: '',
-  linkedIn: '', notes: '', status: 'NEW',
+  linkedIn: '', status: 'NEW',
 }
 
 export default function CreateContact() {
@@ -25,6 +26,7 @@ export default function CreateContact() {
   const navigate = useNavigate()
 
   const [form,     setForm]     = useState(INITIAL)
+  const [notes,    setNotes]    = useState([])
   const [errors,   setErrors]   = useState({})
   const [loading,  setLoading]  = useState(false)
   const [apiError, setApiError] = useState('')
@@ -35,6 +37,10 @@ export default function CreateContact() {
     if (apiError) setApiError('')
   }
 
+  const addNote    = () => setNotes((p) => [...p, ''])
+  const removeNote = (i) => setNotes((p) => p.filter((_, idx) => idx !== i))
+  const setNote    = (i, val) => setNotes((p) => p.map((n, idx) => idx === i ? val : n))
+
   const handleSubmit = async (e) => {
     e.preventDefault()
     if (!form.name.trim()) { setErrors({ name: 'Name is required.' }); return }
@@ -44,7 +50,14 @@ export default function CreateContact() {
       const payload = Object.fromEntries(
         Object.entries(form).filter(([_, v]) => v !== '')
       )
-      await createContactApi(id, payload)
+      const { data } = await createContactApi(id, payload)
+
+      // create notes if any
+      const validNotes = notes.filter((n) => n.trim())
+      if (validNotes.length > 0) {
+        await createContactNotesBulkApi(data.id, validNotes.map((content) => ({ content })))
+      }
+
       navigate(`/companies/${id}/contacts`)
     } catch (err) {
       setApiError(err?.response?.data?.message || 'Failed to create contact.')
@@ -69,6 +82,7 @@ export default function CreateContact() {
         {apiError && <div className="create-contact__api-error">{apiError}</div>}
 
         <form onSubmit={handleSubmit} noValidate>
+
           <div className="create-contact__section-title">Basic info</div>
           <div className="create-contact__row">
             <div className="create-contact__field">
@@ -81,7 +95,7 @@ export default function CreateContact() {
             </div>
             <div className="create-contact__field">
               <label className="create-contact__label">Title</label>
-              <input className="create-contact__input" value={form.title} onChange={set('title')} placeholder="e.g. CTO" />
+              <input className="create-contact__input" value={form.title} onChange={set('title')} placeholder="e.g. CTO"/>
             </div>
           </div>
 
@@ -89,16 +103,19 @@ export default function CreateContact() {
           <div className="create-contact__row">
             <div className="create-contact__field">
               <label className="create-contact__label">Email</label>
-              <input className="create-contact__input" type="email" value={form.email} onChange={set('email')} placeholder="email@company.com" />
+              <input className="create-contact__input" type="email" value={form.email}
+                onChange={set('email')} placeholder="email@company.com"/>
             </div>
             <div className="create-contact__field">
               <label className="create-contact__label">Phone</label>
-              <input className="create-contact__input" type="tel" value={form.phone} onChange={set('phone')} placeholder="+966501234567" />
+              <input className="create-contact__input" type="tel" value={form.phone}
+                onChange={set('phone')} placeholder="+966501234567"/>
             </div>
           </div>
           <div className="create-contact__field">
             <label className="create-contact__label">LinkedIn</label>
-            <input className="create-contact__input" value={form.linkedIn} onChange={set('linkedIn')} placeholder="https://linkedin.com/in/..." />
+            <input className="create-contact__input" value={form.linkedIn}
+              onChange={set('linkedIn')} placeholder="https://linkedin.com/in/..."/>
           </div>
 
           <div className="create-contact__section-title">Sales info</div>
@@ -111,13 +128,40 @@ export default function CreateContact() {
             </select>
           </div>
 
-          <div className="create-contact__section-title">Notes</div>
-          <div className="create-contact__field">
-            <textarea
-              className="create-contact__input create-contact__textarea"
-              value={form.notes} onChange={set('notes')} rows={4}
-              placeholder="Add notes about this contact…"
-            />
+          {/* Notes — optional */}
+          <div className="create-contact__section-title create-contact__section-title--notes">
+            Notes
+            <span className="create-contact__section-optional"> — optional</span>
+          </div>
+
+          <div className="create-contact__notes">
+            {notes.map((note, i) => (
+              <div key={i} className="create-contact__note-row">
+                <textarea
+                  className="create-contact__input create-contact__textarea"
+                  value={note}
+                  onChange={(e) => setNote(i, e.target.value)}
+                  rows={2}
+                  placeholder={`Note ${i + 1}…`}
+                />
+                <button
+                  type="button"
+                  className="create-contact__note-remove"
+                  onClick={() => removeNote(i)}
+                >
+                  <svg viewBox="0 0 14 14" fill="none">
+                    <path d="M2 3.5h10M5 3.5V2.5h4v1M5.5 6v4M8.5 6v4M3 3.5l.75 8h6.5L11 3.5"
+                      stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/>
+                  </svg>
+                </button>
+              </div>
+            ))}
+            <button type="button" className="create-contact__add-note" onClick={addNote}>
+              <svg viewBox="0 0 16 16" fill="none">
+                <path d="M8 2v12M2 8h12" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+              </svg>
+              Add note
+            </button>
           </div>
 
           <div className="create-contact__footer">
@@ -129,6 +173,7 @@ export default function CreateContact() {
               {loading ? 'Creating…' : 'Create Contact'}
             </button>
           </div>
+
         </form>
       </div>
     </div>

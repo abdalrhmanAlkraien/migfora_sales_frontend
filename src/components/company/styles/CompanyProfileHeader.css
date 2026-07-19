@@ -125,3 +125,10 @@
   margin-bottom: 8px;  /* ← add this */
   flex-wrap: wrap;
 }
+
+.cph__badge--website {
+  background: rgba(13,27,42,.06); color: rgba(13,27,42,.6);
+  border: 1px solid rgba(13,27,42,.14);
+  text-decoration: none; transition: background .15s;
+}
+.cph__badge--website:hover { background: rgba(13,27,42,.1); }

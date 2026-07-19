@@ -1,16 +1,16 @@
 import { useState, useEffect } from 'react'
 import { createPortal } from 'react-dom'
 import {
-  getCompanyNotesApi,
-  createCompanyNotesBulkApi,
+  getContactNotesApi,
+  createContactNotesBulkApi,
   updateNoteApi,
   deleteNoteApi,
 } from '../../api/notes'
 import ConfirmDialog from '../common/ConfirmDialog'
 import Pagination from '../common/Pagination'
-import './styles/CompanyNotes.css'
+import '../company/styles/CompanyNotes.css'
 
-export default function CompanyNotes({ companyId }) {
+export default function ContactNotes({ contactId }) {
   const [notes, setNotes] = useState([])
   const [loading, setLoading] = useState(true)
   const [page, setPage] = useState(0)
@@ -32,7 +32,7 @@ export default function CompanyNotes({ companyId }) {
   const fetchNotes = async () => {
     setLoading(true)
     try {
-      const { data } = await getCompanyNotesApi(companyId, { page, size: 5 })
+      const { data } = await getContactNotesApi(contactId, { page, size: 5 })
       setNotes(data.content)
       setTotalPages(data.totalPages)
       setTotalElements(data.totalElements)
@@ -43,7 +43,7 @@ export default function CompanyNotes({ companyId }) {
     }
   }
 
-  useEffect(() => { fetchNotes() }, [companyId, page])
+  useEffect(() => { fetchNotes() }, [contactId, page])
 
   useEffect(() => {
     document.body.style.overflow = drawerOpen ? 'hidden' : ''
@@ -72,7 +72,7 @@ export default function CompanyNotes({ companyId }) {
     setSaving(true)
     setSaveError('')
     try {
-      await createCompanyNotesBulkApi(companyId, valid.map((content) => ({ content })))
+      await createContactNotesBulkApi(contactId, valid.map((content) => ({ content })))
       setDraftNotes([''])
       setDrawerOpen(false)
       setPage(0)
@@ -127,7 +127,7 @@ export default function CompanyNotes({ companyId }) {
             <span className="cn__count">{totalElements}</span>
           )}
         </div>
-        <button className="cn__add-btn" onClick={openDrawer}>
+        <button className="cn__add-btn cn__add-btn--ghost" onClick={openDrawer}>
           <svg viewBox="0 0 16 16" fill="none">
             <path d="M8 2v12M2 8h12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
           </svg>
@@ -146,7 +146,7 @@ export default function CompanyNotes({ companyId }) {
             <path d="M16 16h16M16 22h16M16 28h10" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
           </svg>
           <p>No notes yet</p>
-          <span>Add notes to track intel about this company.</span>
+          <span>Add notes to track intel about this contact.</span>
         </div>
       ) : (
         <div className="cn__list">
@@ -214,7 +214,6 @@ export default function CompanyNotes({ companyId }) {
         />
       )}
 
-      {/* Drawer — portaled to body */}
       {createPortal(
         <>
           <div
@@ -266,6 +265,7 @@ export default function CompanyNotes({ companyId }) {
                 onClick={() => setDrawerOpen(false)} disabled={saving}>
                 Cancel
               </button>
+
               <button className="cn__btn cn__btn--primary"
                 onClick={handleSaveBulk} disabled={saving}>
                 {saving ? 'Saving…' : 'Save Notes'}

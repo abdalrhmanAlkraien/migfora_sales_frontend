@@ -165,3 +165,15 @@
   opacity: 1;
   pointer-events: all;
 }
+
+
+.cn__add-btn--ghost {
+  display: flex; align-items: center; gap: 6px;
+  font-family: var(--font-body); font-size: .78rem; font-weight: 500;
+  color: var(--color-orange); background: rgba(255,153,0,.08);
+  border: 1px solid rgba(255,153,0,.2); border-radius: 7px;
+  padding: 5px 12px; cursor: pointer; transition: background .12s;
+  text-transform: none; letter-spacing: 0; height: auto;
+}
+.cn__add-btn--ghost svg { width: 12px; height: 12px; }
+.cn__add-btn--ghost:hover { background: rgba(255,153,0,.15); }

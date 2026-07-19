@@ -3,25 +3,27 @@ import { useParams, useNavigate } from 'react-router-dom'
 import { getContactApi, updateContactApi, updateContactStatusApi, deleteContactApi } from '../api/contacts'
 import { getContactFollowUpsApi, createFollowUpApi, updateFollowUpApi, deleteFollowUpApi } from '../api/followups'
 import ContactQuickStatus from '../components/contact/ContactQuickStatus'
-import ContactEditDrawer  from '../components/contact/ContactEditDrawer'
-import FollowUpList       from '../components/contact/FollowUpList'
-import FollowUpDrawer     from '../components/contact/FollowUpDrawer'
-import ConfirmDialog      from '../components/common/ConfirmDialog'
+import ContactEditDrawer from '../components/contact/ContactEditDrawer'
+import FollowUpList from '../components/contact/FollowUpList'
+import FollowUpDrawer from '../components/contact/FollowUpDrawer'
+import ConfirmDialog from '../components/common/ConfirmDialog'
 import './styles/ContactDetail.css'
+import SectionDivider from '../components/common/SectionDivider'
+import ContactNotes from '../components/contact/ContactNotes'
 
 export default function ContactDetail() {
-  const { id }   = useParams()
+  const { id } = useParams()
   const navigate = useNavigate()
 
-  const [contact,          setContact]          = useState(null)
-  const [loading,          setLoading]          = useState(true)
-  const [notFound,         setNotFound]         = useState(false)
-  const [followUps,        setFollowUps]        = useState([])
+  const [contact, setContact] = useState(null)
+  const [loading, setLoading] = useState(true)
+  const [notFound, setNotFound] = useState(false)
+  const [followUps, setFollowUps] = useState([])
   const [followUpsLoading, setFollowUpsLoading] = useState(true)
-  const [editOpen,         setEditOpen]         = useState(false)
-  const [deleteOpen,       setDeleteOpen]       = useState(false)
-  const [deleteLoading,    setDeleteLoading]    = useState(false)
-  const [drawerOpen,       setDrawerOpen]       = useState(false)
+  const [editOpen, setEditOpen] = useState(false)
+  const [deleteOpen, setDeleteOpen] = useState(false)
+  const [deleteLoading, setDeleteLoading] = useState(false)
+  const [drawerOpen, setDrawerOpen] = useState(false)
   const [selectedFollowUp, setSelectedFollowUp] = useState(null)
 
   useEffect(() => {
@@ -96,9 +98,9 @@ export default function ContactDetail() {
         setFollowUps((p) => p.map((f) => f.id === selectedFollowUp.id ? data : f))
       } else {
         const payload = {
-          type:        formData.type,
+          type: formData.type,
           scheduledAt: formData.scheduledAt || null,
-          notes:       formData.notes       || undefined,
+          notes: formData.notes || undefined,
         }
         const { data } = await createFollowUpApi(id, payload)
         setFollowUps((p) => [data, ...p])
@@ -142,7 +144,7 @@ export default function ContactDetail() {
           onClick={() => navigate(`/companies/${contact.companyId}/contacts`)}>
           <svg viewBox="0 0 16 16" fill="none">
             <path d="M10 3L5 8l5 5" stroke="currentColor" strokeWidth="1.5"
-              strokeLinecap="round" strokeLinejoin="round"/>
+              strokeLinecap="round" strokeLinejoin="round" />
           </svg>
           {contact.companyName}
         </button>
@@ -165,7 +167,7 @@ export default function ContactDetail() {
               onClick={() => setEditOpen(true)}>
               <svg viewBox="0 0 16 16" fill="none" className="contact-detail__btn-icon">
                 <path d="M2 14h2.5l7.5-7.5-2.5-2.5L2 11.5V14ZM11.5 2l2.5 2.5"
-                  stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round"/>
+                  stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round" />
               </svg>
               Edit
             </button>
@@ -173,7 +175,7 @@ export default function ContactDetail() {
               onClick={() => setDeleteOpen(true)}>
               <svg viewBox="0 0 16 16" fill="none" className="contact-detail__btn-icon">
                 <path d="M2 4h12M5.5 4V2.5h5V4M6.5 7v5M9.5 7v5M3 4l1 9.5h8L13 4"
-                  stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round"/>
+                  stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round" />
               </svg>
               Delete
             </button>
@@ -185,46 +187,46 @@ export default function ContactDetail() {
         <div className="contact-detail__left">
 
           {/* Contact Info */}
-{/* Contact Info */}
-      <div className="contact-detail__card">
-        <h2 className="contact-detail__card-title">Contact Info</h2>
-        <div className="contact-detail__fields">
-          {contact.email && (
-            <div className="contact-detail__field-row">
-              <span className="contact-detail__field-label">Email</span>
-              <a href={`mailto:${contact.email}`} className="contact-detail__field-link">
-                {contact.email}
-              </a>
+
+          <div className="contact-detail__card">
+            <h2 className="contact-detail__card-title">Contact Info</h2>
+            <div className="contact-detail__fields">
+              {contact.email && (
+                <div className="contact-detail__field-row">
+                  <span className="contact-detail__field-label">Email</span>
+                  <a href={`mailto:${contact.email}`} className="contact-detail__field-link">
+                    {contact.email}
+                  </a>
+                </div>
+              )}
+              {contact.phone && (
+                <div className="contact-detail__field-row">
+                  <span className="contact-detail__field-label">Phone</span>
+                  <a href={`tel:${contact.phone}`} className="contact-detail__field-link">
+                    {contact.phone}
+                  </a>
+                </div>
+              )}
+              {contact.linkedIn && (
+                <div className="contact-detail__field-row">
+                  <span className="contact-detail__field-label">LinkedIn</span>
+
+                  <a href={contact.linkedIn}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="contact-detail__field-linkedin"
+                  >
+                    <svg viewBox="0 0 14 14" fill="none" width="14" height="14">
+                      <rect x="1" y="1" width="12" height="12" rx="2.5" fill="#0a66c2" />
+                      <path d="M3.5 5.5v5M3.5 3.5v.01M6.5 10.5V7.5c0-1 .8-1.5 1.5-1.5s1.5.5 1.5 1.5v3M6.5 5.5v5"
+                        stroke="white" strokeWidth="1.1" strokeLinecap="round" />
+                    </svg>
+                    View LinkedIn Profile
+                  </a>
+                </div>
+              )}
             </div>
-          )}
-          {contact.phone && (
-            <div className="contact-detail__field-row">
-              <span className="contact-detail__field-label">Phone</span>
-              <a href={`tel:${contact.phone}`} className="contact-detail__field-link">
-                {contact.phone}
-              </a>
-            </div>
-          )}
-          {contact.linkedIn && (
-            <div className="contact-detail__field-row">
-              <span className="contact-detail__field-label">LinkedIn</span>
-              
-                <a href={contact.linkedIn}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="contact-detail__field-linkedin"
-              >
-                <svg viewBox="0 0 14 14" fill="none" width="14" height="14">
-                  <rect x="1" y="1" width="12" height="12" rx="2.5" fill="#0a66c2"/>
-                  <path d="M3.5 5.5v5M3.5 3.5v.01M6.5 10.5V7.5c0-1 .8-1.5 1.5-1.5s1.5.5 1.5 1.5v3M6.5 5.5v5"
-                    stroke="white" strokeWidth="1.1" strokeLinecap="round"/>
-                </svg>
-                View LinkedIn Profile
-              </a>
-            </div>
-          )}
-        </div>
-      </div>
+          </div>
 
           {/* Follow-up Stats */}
           <div className="contact-detail__card">
@@ -257,13 +259,13 @@ export default function ContactDetail() {
             </div>
           </div>
 
-          {/* Notes */}
+          {/* Notes
           {contact.notes && (
             <div className="contact-detail__card">
               <h2 className="contact-detail__card-title">Notes</h2>
               <p className="contact-detail__notes">{contact.notes}</p>
             </div>
-          )}
+          )} */}
 
         </div>
 
@@ -274,6 +276,8 @@ export default function ContactDetail() {
             onFollowUpClick={(fu) => { setSelectedFollowUp(fu); setDrawerOpen(true) }}
             onNew={() => { setSelectedFollowUp(null); setDrawerOpen(true) }}
           />
+          <SectionDivider label="Notes" />
+          <ContactNotes contactId={id} />
         </div>
       </div>
 

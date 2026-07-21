@@ -3,10 +3,21 @@ import { createPortal } from 'react-dom'
 import ConfirmDialog from '../common/ConfirmDialog'
 import './styles/FollowUpDrawer.css'
 
-const TYPES    = ['CALL','VISIT','MEETING','EMAIL','WHATSAPP']
+const TYPES = ['CALL', 'VISIT', 'MEETING', 'EMAIL', 'WHATSAPP', 'LINKEDIN', 'SMS', 'PROPOSAL', 'DEMO']
 const STATUSES = ['SCHEDULED','DONE','MISSED']
 
-const TYPE_LABELS   = { CALL:'Call', VISIT:'Visit', MEETING:'Meeting', EMAIL:'Email', WHATSAPP:'WhatsApp' }
+const TYPE_LABELS = {
+  CALL:     'Call',
+  VISIT:    'Visit',
+  MEETING:  'Meeting',
+  EMAIL:    'Email',
+  WHATSAPP: 'WhatsApp',
+  LINKEDIN: 'LinkedIn',
+  SMS:      'SMS',
+  PROPOSAL: 'Proposal',
+  DEMO:     'Demo',
+}
+
 const STATUS_LABELS = { SCHEDULED:'Scheduled', DONE:'Done', MISSED:'Missed' }
 
 const EMPTY = { type: 'CALL', scheduledAt: '', notes: '', outcome: '', status: 'SCHEDULED' }

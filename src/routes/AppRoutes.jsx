@@ -29,6 +29,7 @@ import PlatformInvestigations from '../pages/PlatformInvestigations'
 import PlatformReports from '../pages/PlatformReports'
 import ForgotPassword from '../pages/ForgotPassword'
 import TokenGuard from '../components/TokenGuard'
+import Lookup from '../pages/Lookup'
 
 
 export default function AppRoutes() {
@@ -148,6 +149,10 @@ export default function AppRoutes() {
 
           <Route path="/forgot-password" element={
             <AuthLayout><ForgotPassword /></AuthLayout>
+          } />
+
+          <Route path="/lookup" element={
+            <ProtectedRoute adminOnly><AppLayout><Lookup /></AppLayout></ProtectedRoute>
           } />
           {/* Fallback */}
           <Route path="*" element={<Navigate to="/dashboard" replace />} />

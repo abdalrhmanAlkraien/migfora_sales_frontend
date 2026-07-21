@@ -39,14 +39,14 @@ export default function CompanyProfileHeader({ company, onEdit, onDelete }) {
           </div>
 
           <div className="cph__meta-row">
-            {company.industry && (
+            {company.industryName && (
               <span className="cph__meta-item">
                 <svg viewBox="0 0 16 16" fill="none" className="cph__meta-icon">
                   <rect x="1.5" y="7" width="4" height="7.5" rx="1" stroke="currentColor" strokeWidth="1.2" />
                   <rect x="6" y="4" width="4" height="10.5" rx="1" stroke="currentColor" strokeWidth="1.2" />
                   <rect x="10.5" y="1.5" width="4" height="13" rx="1" stroke="currentColor" strokeWidth="1.2" />
                 </svg>
-                {company.industry}
+                {company.industryName}
               </span>
             )}
 

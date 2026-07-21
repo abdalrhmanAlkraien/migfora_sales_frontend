@@ -1,13 +1,11 @@
 import { useState, useEffect, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { getCompaniesApi } from '../api/companies'
-import CompanyCard       from '../components/company/CompanyCard'
-import CompanyFilters    from '../components/company/CompanyFilters'
+import axiosInstance from '../api/axiosInstance'
+import CompanyCard from '../components/company/CompanyCard'
+import CompanyFilters from '../components/company/CompanyFilters'
 import CompanyEmptyState from '../components/company/CompanyEmptyState'
-import Pagination        from '../components/common/Pagination'
+import Pagination from '../components/common/Pagination'
 import './styles/Companies.css'
-
-const PAGE_SIZE = 20
 
 export default function Companies() {
   const navigate = useNavigate()
@@ -18,53 +16,54 @@ export default function Companies() {
   const [page,          setPage]          = useState(0)
   const [loading,       setLoading]       = useState(true)
   const [error,         setError]         = useState('')
+  const [search,        setSearch]        = useState('')
+  const [status,        setStatus]        = useState('All')
+  const [sort,          setSort]          = useState('createdAt,desc')
+  const [industryIds,   setIndustryIds]   = useState([])
 
-  const [search, setSearch] = useState('')
-  const [status, setStatus] = useState('All')
-  const [sort,   setSort]   = useState('createdAt,desc')
-
-  const fetchCompanies = useCallback(async (currentPage) => {
+  const fetchCompanies = useCallback(async () => {
     setLoading(true)
     setError('')
     try {
-      const params = {
-        page: currentPage,
-        size: PAGE_SIZE,
-        sort,
-      }
-      if (search.trim()) params.search = search.trim()
-      if (status !== 'All') params.status = status
+      const params = new URLSearchParams()
+      params.append('page', page)
+      params.append('size', 20)
+      params.append('sort', sort)
+      if (search) params.append('search', search)
+      if (status !== 'All') params.append('status', status)
+      industryIds.forEach((id) => params.append('industryIds', id))
 
-      const { data } = await getCompaniesApi(params)
+      const { data } = await axiosInstance.get(`/companies?${params.toString()}`)
       setCompanies(data.content)
-      setTotalElements(data.totalElements)
       setTotalPages(data.totalPages)
-    } catch (err) {
-      setError('Failed to load companies. Please try again.')
+      setTotalElements(data.totalElements)
+    } catch {
+      setError('Failed to load companies.')
     } finally {
       setLoading(false)
     }
-  }, [search, status, sort])
+  }, [page, sort, search, status, industryIds])
 
-  // reset to page 0 when filters change
+  // reset page when filters change
   useEffect(() => {
     setPage(0)
-  }, [search, status, sort])
+  }, [search, status, sort, industryIds])
 
   useEffect(() => {
-    fetchCompanies(page)
-  }, [page, fetchCompanies])
+    fetchCompanies()
+  }, [fetchCompanies])
 
   const handlePageChange = (newPage) => {
     setPage(newPage)
     window.scrollTo({ top: 0, behavior: 'smooth' })
   }
 
-  const handleSearch = (val) => setSearch(val)
-  const handleStatus = (val) => setStatus(val)
-  const handleSort   = (val) => setSort(val)
+  const handleSearch     = (val) => setSearch(val)
+  const handleStatus     = (val) => setStatus(val)
+  const handleSort       = (val) => setSort(val)
+  const handleIndustryIds = (ids) => { setIndustryIds(ids); setPage(0) }
 
-  const isFiltered = search.trim() !== '' || status !== 'All'
+  const isFiltered = search.trim() !== '' || status !== 'All' || industryIds.length > 0
 
   return (
     <div className="companies">
@@ -72,14 +71,9 @@ export default function Companies() {
       <div className="companies__header">
         <div className="companies__header-left">
           <h1 className="companies__title">Companies</h1>
-          {!loading && (
-            <span className="companies__count">{totalElements}</span>
-          )}
+          {!loading && <span className="companies__count">{totalElements}</span>}
         </div>
-        <button
-          className="companies__add-btn"
-          onClick={() => navigate('/companies/new')}
-        >
+        <button className="companies__add-btn" onClick={() => navigate('/companies/new')}>
           <svg viewBox="0 0 16 16" fill="none" className="companies__add-icon">
             <path d="M8 2v12M2 8h12" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
           </svg>
@@ -92,21 +86,21 @@ export default function Companies() {
           search={search}
           status={status}
           sort={sort}
+          industryIds={industryIds}
           onSearch={handleSearch}
           onStatus={handleStatus}
           onSort={handleSort}
+          onIndustryIds={handleIndustryIds}
         />
       </div>
 
-      {error && (
-        <div className="companies__error">{error}</div>
-      )}
+      {error && <div className="companies__error">{error}</div>}
 
       {loading ? (
         <div className="companies__loading">
           <div className="companies__skeleton-grid">
             {Array.from({ length: 8 }).map((_, i) => (
-              <div key={i} className="companies__skeleton-card" />
+              <div key={i} className="companies__skeleton-card"/>
             ))}
           </div>
         </div>
@@ -114,11 +108,11 @@ export default function Companies() {
         <>
           <div className="companies__grid">
             {companies.length === 0 ? (
-              <CompanyEmptyState filtered={isFiltered} />
+              <CompanyEmptyState filtered={isFiltered}/>
             ) : (
               companies.map((company, i) => (
                 <div key={company.id} style={{ animationDelay: `${i * 0.04}s` }}>
-                  <CompanyCard company={company} />
+                  <CompanyCard company={company}/>
                 </div>
               ))
             )}

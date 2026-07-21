@@ -1,42 +1,50 @@
 import { useState, useEffect } from 'react'
 import { createPortal } from 'react-dom'
 import './styles/CompanyEditDrawer.css'
+import { getIndustriesApi } from '../../api/industries'
 
 const STATUS_OPTIONS = [
-  'PROSPECT','CONTACTED','QUALIFIED','PROPOSAL','CLOSED_WON','CLOSED_LOST'
+  'PROSPECT', 'CONTACTED', 'QUALIFIED', 'PROPOSAL', 'CLOSED_WON', 'CLOSED_LOST'
 ]
 const SIZE_OPTIONS = [
-  '1-10','11-50','51-200','201-500','501-1000','1000+'
+  '1-10', '11-50', '51-200', '201-500', '501-1000', '1000+'
 ]
 const LEAD_SOURCE_OPTIONS = [
-  { value: 'LINKEDIN_SEARCH',  label: 'LinkedIn Search' },
+  { value: 'LINKEDIN_SEARCH', label: 'LinkedIn Search' },
   { value: 'LINKEDIN_CONTENT', label: 'LinkedIn Content' },
   { value: 'PERSONAL_NETWORK', label: 'Personal Network' },
-  { value: 'REFERRAL',         label: 'Referral' },
-  { value: 'COLD_EMAIL',       label: 'Cold Email' },
+  { value: 'REFERRAL', label: 'Referral' },
+  { value: 'COLD_EMAIL', label: 'Cold Email' },
   { value: 'EVENT_CONFERENCE', label: 'Event / Conference' },
-  { value: 'INBOUND_WEBSITE',  label: 'Inbound Website' },
-  { value: 'OTHER',            label: 'Other' },
+  { value: 'INBOUND_WEBSITE', label: 'Inbound Website' },
+  { value: 'OTHER', label: 'Other' },
 ]
 
 export default function CompanyEditDrawer({ open, company, onClose, onSave }) {
-  const [form,    setForm]    = useState({})
+  const [form, setForm] = useState({})
   const [loading, setLoading] = useState(false)
-  const [error,   setError]   = useState('')
+  const [error, setError] = useState('')
+
+  const [industries, setIndustries] = useState([])
+  useEffect(() => {
+    getIndustriesApi().then(({ data }) => setIndustries(data)).catch(() => { })
+  }, [])
 
   useEffect(() => {
     if (company) setForm({
-      name:        company.name        || '',
-      domain:      company.domain      || '',
-      website:     company.website     || '',
+      name: company.name || '',
+      domain: company.domain || '',
+      website: company.website || '',
       linkedinUrl: company.linkedinUrl || '',
-      industry:    company.industry    || '',
-      size:        company.size        || '',
-      country:     company.country     || '',
-      city:        company.city        || '',
-      status:      company.status      || 'PROSPECT',
-      leadSource:  company.leadSource  || 'LINKEDIN_SEARCH',
-      notes:       company.notes       || '',
+      industry: company.industry || '',
+      industryId: company.industryId || '',
+
+      size: company.size || '',
+      country: company.country || '',
+      city: company.city || '',
+      status: company.status || 'PROSPECT',
+      leadSource: company.leadSource || 'LINKEDIN_SEARCH',
+      notes: company.notes || '',
     })
     setError('')
   }, [company, open])
@@ -51,6 +59,8 @@ export default function CompanyEditDrawer({ open, company, onClose, onSave }) {
     document.body.style.overflow = open ? 'hidden' : ''
     return () => { document.body.style.overflow = '' }
   }, [open])
+
+
 
   const set = (field) => (e) => setForm((p) => ({ ...p, [field]: e.target.value }))
 
@@ -88,7 +98,7 @@ export default function CompanyEditDrawer({ open, company, onClose, onSave }) {
           <h2 className="ced__title">Edit Company</h2>
           <button className="ced__close" onClick={onClose} aria-label="Close">
             <svg viewBox="0 0 16 16" fill="none">
-              <path d="M3 3l10 10M13 3L3 13" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+              <path d="M3 3l10 10M13 3L3 13" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
             </svg>
           </button>
         </div>
@@ -102,30 +112,35 @@ export default function CompanyEditDrawer({ open, company, onClose, onSave }) {
 
             <div className="ced__field">
               <label className="ced__label">Company name <span className="ced__req">*</span></label>
-              <input className="ced__input" value={form.name} onChange={set('name')} required/>
+              <input className="ced__input" value={form.name} onChange={set('name')} required />
             </div>
 
             <div className="ced__row">
               <div className="ced__field">
                 <label className="ced__label">Domain</label>
-                <input className="ced__input" value={form.domain} onChange={set('domain')} placeholder="example.com"/>
+                <input className="ced__input" value={form.domain} onChange={set('domain')} placeholder="example.com" />
               </div>
               <div className="ced__field">
                 <label className="ced__label">Website</label>
-                <input className="ced__input" value={form.website} onChange={set('website')} placeholder="https://example.com"/>
+                <input className="ced__input" value={form.website} onChange={set('website')} placeholder="https://example.com" />
               </div>
             </div>
 
             <div className="ced__field">
               <label className="ced__label">LinkedIn URL</label>
               <input className="ced__input" value={form.linkedinUrl} onChange={set('linkedinUrl')}
-                placeholder="https://linkedin.com/company/..."/>
+                placeholder="https://linkedin.com/company/..." />
             </div>
 
             <div className="ced__row">
               <div className="ced__field">
                 <label className="ced__label">Industry</label>
-                <input className="ced__input" value={form.industry} onChange={set('industry')}/>
+                <select className="ced__input" value={form.industryId || ''} onChange={set('industryId')}>
+                  <option value="">Select industry…</option>
+                  {industries.map((ind) => (
+                    <option key={ind.id} value={ind.id}>{ind.name}</option>
+                  ))}
+                </select>
               </div>
               <div className="ced__field">
                 <label className="ced__label">Lead Source</label>
@@ -158,11 +173,11 @@ export default function CompanyEditDrawer({ open, company, onClose, onSave }) {
             <div className="ced__row">
               <div className="ced__field">
                 <label className="ced__label">Country</label>
-                <input className="ced__input" value={form.country} onChange={set('country')}/>
+                <input className="ced__input" value={form.country} onChange={set('country')} />
               </div>
               <div className="ced__field">
                 <label className="ced__label">City</label>
-                <input className="ced__input" value={form.city} onChange={set('city')}/>
+                <input className="ced__input" value={form.city} onChange={set('city')} />
               </div>
             </div>
 
@@ -171,7 +186,7 @@ export default function CompanyEditDrawer({ open, company, onClose, onSave }) {
               <label className="ced__label">Notes</label>
               <textarea className="ced__input ced__textarea" value={form.notes}
                 onChange={set('notes')} rows={4}
-                placeholder="Add internal notes about this company…"/>
+                placeholder="Add internal notes about this company…" />
             </div>
 
           </div>

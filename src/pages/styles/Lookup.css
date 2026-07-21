@@ -1,0 +1,99 @@
+.lookup {
+  padding: 32px; max-width: 1100px; margin: 0 auto;
+  animation: fade-in .3s ease both;
+}
+@keyframes fade-in { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:none; } }
+
+.lookup__header { margin-bottom: 8px; }
+.lookup__title {
+  font-family: var(--font-heading); font-size: 1.75rem; font-weight: 800; color: var(--color-navy);
+}
+.lookup__subtitle {
+  font-family: var(--font-body); font-size: .875rem; color: rgba(13,27,42,.4); margin-top: 4px;
+}
+
+.lookup__section {
+  background: var(--color-white); border: 1px solid rgba(13,27,42,.08);
+  border-radius: 14px; overflow: hidden; margin-top: 8px;
+}
+.lookup__section-header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 16px 20px; border-bottom: 1px solid rgba(13,27,42,.07);
+}
+.lookup__section-header-left { display: flex; align-items: center; gap: 10px; }
+.lookup__section-title {
+  font-family: var(--font-heading); font-size: .95rem; font-weight: 700; color: var(--color-navy);
+}
+.lookup__count {
+  font-family: var(--font-heading); font-size: .72rem; font-weight: 700;
+  color: var(--color-orange); background: rgba(255,153,0,.12);
+  padding: 2px 8px; border-radius: 20px;
+}
+.lookup__add-btn {
+  display: flex; align-items: center; gap: 7px;
+  font-family: var(--font-heading); font-size: .78rem; font-weight: 700;
+  letter-spacing: .07em; text-transform: uppercase;
+  color: var(--color-navy); background: var(--color-orange);
+  border: none; border-radius: 8px; padding: 0 16px; height: 36px;
+  cursor: pointer; transition: background .15s;
+}
+.lookup__add-btn svg { width: 13px; height: 13px; }
+.lookup__add-btn:hover { background: var(--color-orange-2); }
+
+.lookup__error {
+  margin: 16px 20px; padding: 12px 14px; border-radius: 8px;
+  background: rgba(220,38,38,.07); border: 1px solid rgba(220,38,38,.18);
+  font-family: var(--font-body); font-size: .875rem; color: #dc2626;
+}
+.lookup__loading { padding: 16px 20px; display: flex; flex-direction: column; gap: 10px; }
+.lookup__skeleton {
+  height: 44px; border-radius: 8px;
+  background: linear-gradient(90deg, rgba(13,27,42,.04) 25%, rgba(13,27,42,.07) 50%, rgba(13,27,42,.04) 75%);
+  background-size: 200% 100%; animation: shimmer 1.4s infinite;
+}
+@keyframes shimmer { 0%{background-position:200% 0} 100%{background-position:-200% 0} }
+
+.lookup__empty {
+  padding: 48px 24px; text-align: center; font-family: var(--font-body);
+}
+.lookup__empty p { font-size: .9rem; font-weight: 600; color: var(--color-navy); margin-bottom: 4px; }
+.lookup__empty span { font-size: .8rem; color: rgba(13,27,42,.35); }
+
+.lookup__table-wrap { overflow-x: auto; }
+.lookup__table {
+  width: 100%; border-collapse: collapse;
+  font-family: var(--font-body); font-size: .875rem;
+}
+.lookup__table thead tr { border-bottom: 1px solid rgba(13,27,42,.08); }
+.lookup__table th {
+  padding: 10px 16px; text-align: left;
+  font-size: .7rem; font-weight: 600; letter-spacing: .07em; text-transform: uppercase;
+  color: rgba(13,27,42,.4);
+}
+.lookup__table td { padding: 13px 16px; border-bottom: 1px solid rgba(13,27,42,.05); }
+.lookup__table tbody tr:last-child td { border-bottom: none; }
+.lookup__table tbody tr:hover { background: rgba(13,27,42,.02); }
+.lookup__row--inactive { opacity: .5; }
+
+.lookup__cell--name { font-weight: 500; color: var(--color-navy); }
+.lookup__cell--arabic { color: rgba(13,27,42,.6); font-size: .82rem; }
+.lookup__cell--desc { color: rgba(13,27,42,.5); max-width: 260px; }
+.lookup__cell--date { color: rgba(13,27,42,.4); font-size: .8rem; white-space: nowrap; }
+.lookup__cell--actions { width: 80px; display: flex; gap: 6px; align-items: center; }
+
+.lookup__badge {
+  font-family: var(--font-body); font-size: .68rem; font-weight: 600;
+  letter-spacing: .05em; text-transform: uppercase;
+  padding: 3px 9px; border-radius: 20px;
+}
+.lookup__badge--active   { background: rgba(16,185,129,.1); color: #059669; }
+.lookup__badge--inactive { background: rgba(13,27,42,.07);  color: rgba(13,27,42,.45); }
+
+.lookup__icon-btn {
+  width: 30px; height: 30px; border-radius: 6px; border: none;
+  background: transparent; cursor: pointer; color: rgba(13,27,42,.4);
+  display: flex; align-items: center; justify-content: center; transition: all .12s;
+}
+.lookup__icon-btn svg { width: 13px; height: 13px; }
+.lookup__icon-btn:hover { background: rgba(13,27,42,.06); color: var(--color-navy); }
+.lookup__icon-btn--danger:hover { background: rgba(220,38,38,.08); color: #dc2626; }

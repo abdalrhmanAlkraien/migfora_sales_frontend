@@ -28,129 +28,132 @@ import PlatformDetail from '../pages/PlatformDetail'
 import PlatformInvestigations from '../pages/PlatformInvestigations'
 import PlatformReports from '../pages/PlatformReports'
 import ForgotPassword from '../pages/ForgotPassword'
+import TokenGuard from '../components/TokenGuard'
 
 
 export default function AppRoutes() {
   return (
     <BrowserRouter>
-      <Routes>
+      <TokenGuard>
+        <Routes>
 
-        {/* Public routes — Auth layout */}
-        <Route path="/login" element={
-          <AuthLayout>
-            <Login />
-          </AuthLayout>
-        }/>
+          {/* Public routes — Auth layout */}
+          <Route path="/login" element={
+            <AuthLayout>
+              <Login />
+            </AuthLayout>
+          } />
 
-        <Route path="/change-password" element={
-          <AuthLayout><ChangePassword /></AuthLayout>
-        }/>
+          <Route path="/change-password" element={
+            <AuthLayout><ChangePassword /></AuthLayout>
+          } />
 
-        <Route path="/register" element={
-          <AuthLayout>
-            <Register />
-          </AuthLayout>
-        }/>
+          <Route path="/register" element={
+            <AuthLayout>
+              <Register />
+            </AuthLayout>
+          } />
 
-        {/* Protected routes — App layout */}
-        <Route path="/dashboard" element={
-          <ProtectedRoute>
-            <AppLayout>
-              <Dashboard />
-            </AppLayout>
-          </ProtectedRoute>
-        }/>
-        
-        <Route path="/companies" element={
-          <ProtectedRoute>
-            <AppLayout>
-              <Companies />
-            </AppLayout>
-          </ProtectedRoute>
-        }/>
-
-        <Route path="/companies/:id" element={
-          <ProtectedRoute>
-            <AppLayout>
-              <CompanyProfile />
+          {/* Protected routes — App layout */}
+          <Route path="/dashboard" element={
+            <ProtectedRoute>
+              <AppLayout>
+                <Dashboard />
               </AppLayout>
-              </ProtectedRoute>
-        }/>
+            </ProtectedRoute>
+          } />
 
-        <Route path="/companies/new" element={
-          <ProtectedRoute>
-            <AppLayout>
-              <CreateCompany />
+          <Route path="/companies" element={
+            <ProtectedRoute>
+              <AppLayout>
+                <Companies />
               </AppLayout>
-          </ProtectedRoute>
-        }/>  
+            </ProtectedRoute>
+          } />
 
-        <Route path="/companies/:id/platforms" element={
-          <ProtectedRoute><AppLayout><CompanyPlatforms /></AppLayout></ProtectedRoute>
-        }/>
-        <Route path="/companies/:id/platforms/new" element={
-          <ProtectedRoute><AppLayout><CreatePlatform /></AppLayout></ProtectedRoute>
-        }/>
-        <Route path="/platforms/:id" element={
-          <ProtectedRoute><AppLayout><PlatformDetail /></AppLayout></ProtectedRoute>
-        }/>
-        <Route path="/platforms/:id/investigations" element={
-          <ProtectedRoute><AppLayout><PlatformInvestigations /></AppLayout></ProtectedRoute>
-        }/>
-        <Route path="/platforms/:id/investigations/new" element={
-          <ProtectedRoute><AppLayout><CreateInvestigation /></AppLayout></ProtectedRoute>
-        }/>
-        <Route path="/platforms/:id/reports" element={
-          <ProtectedRoute><AppLayout><PlatformReports /></AppLayout></ProtectedRoute>
-        }/>
+          <Route path="/companies/:id" element={
+            <ProtectedRoute>
+              <AppLayout>
+                <CompanyProfile />
+              </AppLayout>
+            </ProtectedRoute>
+          } />
+
+          <Route path="/companies/new" element={
+            <ProtectedRoute>
+              <AppLayout>
+                <CreateCompany />
+              </AppLayout>
+            </ProtectedRoute>
+          } />
+
+          <Route path="/companies/:id/platforms" element={
+            <ProtectedRoute><AppLayout><CompanyPlatforms /></AppLayout></ProtectedRoute>
+          } />
+          <Route path="/companies/:id/platforms/new" element={
+            <ProtectedRoute><AppLayout><CreatePlatform /></AppLayout></ProtectedRoute>
+          } />
+          <Route path="/platforms/:id" element={
+            <ProtectedRoute><AppLayout><PlatformDetail /></AppLayout></ProtectedRoute>
+          } />
+          <Route path="/platforms/:id/investigations" element={
+            <ProtectedRoute><AppLayout><PlatformInvestigations /></AppLayout></ProtectedRoute>
+          } />
+          <Route path="/platforms/:id/investigations/new" element={
+            <ProtectedRoute><AppLayout><CreateInvestigation /></AppLayout></ProtectedRoute>
+          } />
+          <Route path="/platforms/:id/reports" element={
+            <ProtectedRoute><AppLayout><PlatformReports /></AppLayout></ProtectedRoute>
+          } />
 
 
-        <Route path="/investigations/:id" element={
-          <ProtectedRoute><AppLayout><InvestigationDetail /></AppLayout></ProtectedRoute>
-        }/>
-        <Route path="/investigations/:id/lab" element={
-          <ProtectedRoute><AppLayout><InvestigationLab /></AppLayout></ProtectedRoute>
-        }/>         
+          <Route path="/investigations/:id" element={
+            <ProtectedRoute><AppLayout><InvestigationDetail /></AppLayout></ProtectedRoute>
+          } />
+          <Route path="/investigations/:id/lab" element={
+            <ProtectedRoute><AppLayout><InvestigationLab /></AppLayout></ProtectedRoute>
+          } />
 
-        <Route path="/companies/:id/contacts" element={
-          <ProtectedRoute><AppLayout><CompanyContacts /></AppLayout></ProtectedRoute>
-        }/>
-        <Route path="/companies/:id/contacts/new" element={
-          <ProtectedRoute><AppLayout><CreateContact /></AppLayout></ProtectedRoute>
-        }/>
-        <Route path="/contacts/:id" element={
-          <ProtectedRoute><AppLayout><ContactDetail /></AppLayout></ProtectedRoute>
-        }/>  
-        
-        <Route path="/companies/:id/reports" element={
-          <ProtectedRoute><AppLayout><CompanyReports /></AppLayout></ProtectedRoute>
-        }/>
-        <Route path="/reports/:id" element={
-          <ProtectedRoute><AppLayout><ReportDetail /></AppLayout></ProtectedRoute>
-        }/>              
+          <Route path="/companies/:id/contacts" element={
+            <ProtectedRoute><AppLayout><CompanyContacts /></AppLayout></ProtectedRoute>
+          } />
+          <Route path="/companies/:id/contacts/new" element={
+            <ProtectedRoute><AppLayout><CreateContact /></AppLayout></ProtectedRoute>
+          } />
+          <Route path="/contacts/:id" element={
+            <ProtectedRoute><AppLayout><ContactDetail /></AppLayout></ProtectedRoute>
+          } />
 
-        <Route path="/users" element={
-          <ProtectedRoute adminOnly><AppLayout><UserManagement /></AppLayout></ProtectedRoute>
-        }/>
-        <Route path="/profile" element={
-          <ProtectedRoute><AppLayout><UserProfile /></AppLayout></ProtectedRoute>
-        }/>
+          <Route path="/companies/:id/reports" element={
+            <ProtectedRoute><AppLayout><CompanyReports /></AppLayout></ProtectedRoute>
+          } />
+          <Route path="/reports/:id" element={
+            <ProtectedRoute><AppLayout><ReportDetail /></AppLayout></ProtectedRoute>
+          } />
 
-        <Route path="/users/:sub" element={
-          <ProtectedRoute adminOnly><AppLayout><UserDetail /></AppLayout></ProtectedRoute>
-        }/>  
+          <Route path="/users" element={
+            <ProtectedRoute adminOnly><AppLayout><UserManagement /></AppLayout></ProtectedRoute>
+          } />
+          <Route path="/profile" element={
+            <ProtectedRoute><AppLayout><UserProfile /></AppLayout></ProtectedRoute>
+          } />
 
-        <Route path="/admin/jobs" element={
-          <ProtectedRoute adminOnly><AppLayout><AdminJobs /></AppLayout></ProtectedRoute>
-        }/>
+          <Route path="/users/:sub" element={
+            <ProtectedRoute adminOnly><AppLayout><UserDetail /></AppLayout></ProtectedRoute>
+          } />
 
-        <Route path="/forgot-password" element={
-          <AuthLayout><ForgotPassword /></AuthLayout>
-        }/>
-        {/* Fallback */}
-        <Route path="*" element={<Navigate to="/dashboard" replace />} />
+          <Route path="/admin/jobs" element={
+            <ProtectedRoute adminOnly><AppLayout><AdminJobs /></AppLayout></ProtectedRoute>
+          } />
 
-      </Routes>
+          <Route path="/forgot-password" element={
+            <AuthLayout><ForgotPassword /></AuthLayout>
+          } />
+          {/* Fallback */}
+          <Route path="*" element={<Navigate to="/dashboard" replace />} />
+
+        </Routes>
+      </TokenGuard>
     </BrowserRouter>
   )
 }

@@ -88,3 +88,14 @@
 }
 .crs__show-more:hover { background: rgba(255,153,0,.04); }
 .crs__show-more-icon { width: 13px; height: 13px; }
+
+.crs__row-actions {
+  display: flex; align-items: center; gap: 8px; flex-shrink: 0;
+}
+.crs__linkedin {
+  display: flex; align-items: center; justify-content: center;
+  width: 20px; height: 20px; border-radius: 4px;
+  transition: opacity .15s; flex-shrink: 0;
+}
+.crs__linkedin:hover { opacity: .8; }
+.crs__linkedin svg { width: 20px; height: 20px; }

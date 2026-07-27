@@ -89,7 +89,25 @@ function ContactRow({ item, onClick }) {
         <span className="crs__row-title">{item.name}</span>
         <span className="crs__row-sub">{item.title || '—'}</span>
       </div>
-      <span className={`crs__badge crs__badge--${s.cls}`}>{s.label}</span>
+      <div className="crs__row-actions">
+        {item.linkedIn && (
+          
+            <a href={item.linkedIn}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="crs__linkedin"
+            onClick={(e) => e.stopPropagation()}
+            title="LinkedIn Profile"
+          >
+            <svg viewBox="0 0 16 16" fill="none">
+              <rect x="1" y="1" width="14" height="14" rx="3" fill="#0a66c2"/>
+              <path d="M4.5 6.5v5M4.5 4.5v.01M7.5 11.5V8.5c0-1.1 1-2 2-2s2 .9 2 2v3M7.5 6.5v5"
+                stroke="white" strokeWidth="1.2" strokeLinecap="round"/>
+            </svg>
+          </a>
+        )}
+        <span className={`crs__badge crs__badge--${s.cls}`}>{s.label}</span>
+      </div>
     </div>
   )
 }

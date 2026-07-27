@@ -27,7 +27,7 @@ export default function Companies() {
     try {
       const params = new URLSearchParams()
       params.append('page', page)
-      params.append('size', 20)
+      params.append('size', 10)
       params.append('sort', sort)
       if (search) params.append('search', search)
       if (status !== 'All') params.append('status', status)

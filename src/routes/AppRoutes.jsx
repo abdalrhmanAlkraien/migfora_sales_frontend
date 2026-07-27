@@ -30,6 +30,8 @@ import PlatformReports from '../pages/PlatformReports'
 import ForgotPassword from '../pages/ForgotPassword'
 import TokenGuard from '../components/TokenGuard'
 import Lookup from '../pages/Lookup'
+import Events from '../pages/Events'
+import Outreach from '../pages/Outreach'
 
 
 export default function AppRoutes() {
@@ -153,6 +155,13 @@ export default function AppRoutes() {
 
           <Route path="/lookup" element={
             <ProtectedRoute adminOnly><AppLayout><Lookup /></AppLayout></ProtectedRoute>
+          } />
+
+          <Route path="/events" element={
+            <ProtectedRoute><AppLayout><Events /></AppLayout></ProtectedRoute>
+          } />
+          <Route path="/outreach" element={
+            <ProtectedRoute><AppLayout><Outreach /></AppLayout></ProtectedRoute>
           } />
           {/* Fallback */}
           <Route path="*" element={<Navigate to="/dashboard" replace />} />

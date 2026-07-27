@@ -32,6 +32,8 @@ const DYNAMIC_TITLES = [
   { pattern: '/platforms/:id/reports', title: 'Reports' },
   { pattern: '/platforms/:id', title: 'Platform' },
   { pattern: '/lookup', title: 'Lookups' },
+  { pattern: '/events', title: 'Events' },
+  { pattern: '/outreach', title: 'Outreach' },
 
 ]
 

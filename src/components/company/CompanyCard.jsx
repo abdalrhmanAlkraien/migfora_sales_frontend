@@ -17,6 +17,8 @@ export default function CompanyCard({ company }) {
     ? company.name.split(' ').map((w) => w[0]).join('').slice(0, 2).toUpperCase()
     : '??'
 
+  const domain = company.domain || company.website?.replace(/^https?:\/\//, '').split('/')[0]
+
   return (
     <div
       className="company-card"
@@ -29,7 +31,7 @@ export default function CompanyCard({ company }) {
         <div className="company-card__avatar">{initials}</div>
         <div className="company-card__meta">
           <h3 className="company-card__name">{company.name}</h3>
-          <span className="company-card__domain">{company.domain || '—'}</span>
+          <span className="company-card__domain">{domain || '—'}</span>
         </div>
         <div className="company-card__header-right">
           <span className={`company-card__status company-card__status--${(company.status || 'prospect').toLowerCase()}`}>
@@ -71,11 +73,36 @@ export default function CompanyCard({ company }) {
         </div>
       </div>
 
-      {company.industryName && (
-        <div className="company-card__footer">
+      <div className="company-card__footer">
+        {company.industryName && (
           <span className="company-card__industry">{company.industryName}</span>
+        )}
+        <div className="company-card__footer-right">
+          {company.website && (
+            
+              <a href={company.website}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="company-card__website"
+              onClick={(e) => e.stopPropagation()}
+              title="Visit website"
+            >
+              <svg viewBox="0 0 14 14" fill="none">
+                <circle cx="7" cy="7" r="5.5" stroke="currentColor" strokeWidth="1.2"/>
+                <path d="M7 1.5C7 1.5 5.5 3.5 5.5 7s1.5 5.5 1.5 5.5M7 1.5C7 1.5 8.5 3.5 8.5 7S7 12.5 7 12.5M1.5 7h11"
+                  stroke="currentColor" strokeWidth="1.2"/>
+              </svg>
+            </a>
+          )}
+          {company.createdAt && (
+            <span className="company-card__date">
+              {new Date(company.createdAt).toLocaleDateString('en-GB', {
+                day: 'numeric', month: 'short', year: 'numeric'
+              })}
+            </span>
+          )}
         </div>
-      )}
+      </div>
     </div>
   )
 }

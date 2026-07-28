@@ -160,11 +160,17 @@
 
 .company-card__website {
   display: flex; align-items: center; justify-content: center;
-  width: 20px; height: 20px; color: rgba(13,27,42,.4);
-  transition: color .15s; flex-shrink: 0;
+  width: 22px; height: 22px; border-radius: 4px;
+  background: rgba(13,27,42,.08);
+  color: rgba(13,27,42,.6);
+  transition: all .15s; flex-shrink: 0;
+  text-decoration: none;
 }
 .company-card__website svg { width: 14px; height: 14px; }
-.company-card__website:hover { color: var(--color-navy); }
+.company-card__website:hover {
+  background: rgba(13,27,42,.15);
+  color: var(--color-navy);
+}
 
 .company-card__date {
   font-family: var(--font-body); font-size: .7rem;
